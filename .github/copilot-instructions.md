@@ -44,7 +44,6 @@ dotnet test mRemoteNGTests/mRemoteNGTests.csproj
 ### Main Projects
 - **mRemoteNG**: Main application project
 - **mRemoteNGTests**: Unit and integration tests
-- **mRemoteNGSpecs**: Specification tests
 - **ObjectListView.NetCore**: Custom list view control
 - **ExternalConnectors**: External protocol connector implementations
 - **mRemoteNGDocumentation**: reStructuredText documentation
