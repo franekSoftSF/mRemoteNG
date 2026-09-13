@@ -217,7 +217,7 @@ Mirror the main project structure in `mRemoteNGTests/`:
 
 ## Version and Release
 
-- Current development version: 1.78.2-dev
+- Current development version: 1.78.3-dev
 - Version is set in `mRemoteNG.csproj`
 - Builds are automated via GitHub Actions (`.github/workflows/`)
 - Changelog maintained in `CHANGELOG.md`

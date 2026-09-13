@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.78.3]
+### Updated
+- Migrated all projects to .NET 10 (net10.0-windows10.0.26100.0); removed obsolete SpecFlow-based mRemoteNGSpecs project and fixed mRemoteNGTests compilation
+
 ## [1.78.2]
 ### Fixed
 - #3367: fixed cross-thread crash when closing the splash screen on a startup error
@@ -35,7 +39,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - #2212: added 1Password integration
 
 ### Updated
-- Migrated all projects to .NET 10 (net10.0-windows10.0.26100.0); removed obsolete SpecFlow-based mRemoteNGSpecs project and fixed mRemoteNGTests compilation
 - #2883: Improve 1Password logging 
 - #2854: Refactor settings dialog to be opened in dockable panel (for consistency)
 - #2597: Remember the opened connection file on relaunch

@@ -2,7 +2,7 @@ name: Build_and_Release_mR-NB_MultiDeploy
 on:
   push:
     branches:
-      - v1.78.2-dev
+      - v1.78.3-dev
 
   workflow_dispatch:
     inputs:

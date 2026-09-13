@@ -68,7 +68,7 @@ The new workflow file `Build_and_Release_mR-NB-MultiDeploy.yml` automatically bu
 ### Workflow Triggers
 
 The workflow runs when:
-- You push to `v1.78.2-dev` branch with commit message containing "NB release"
+- You push to `v1.78.3-dev` branch with commit message containing "NB release"
 - You manually trigger via workflow_dispatch
 
 ### Release Output
