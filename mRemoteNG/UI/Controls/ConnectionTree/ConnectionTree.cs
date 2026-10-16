@@ -476,6 +476,7 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
         private void RegisterModelUpdateHandlers(ConnectionTreeModel newModel)
         {
             _puttySessionsManager.PuttySessionsCollectionChanged += OnPuttySessionsCollectionChanged;
+            Config.BeyondTrust.BeyondTrustSyncManager.Instance.AccountsCollectionChanged += OnBeyondTrustAccountsChanged;
             newModel.CollectionChanged += HandleCollectionChanged;
             newModel.PropertyChanged += HandleCollectionPropertyChanged;
         }
@@ -483,6 +484,7 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
         private void UnregisterModelUpdateHandlers(ConnectionTreeModel oldConnectionTreeModel)
         {
             _puttySessionsManager.PuttySessionsCollectionChanged -= OnPuttySessionsCollectionChanged;
+            Config.BeyondTrust.BeyondTrustSyncManager.Instance.AccountsCollectionChanged -= OnBeyondTrustAccountsChanged;
 
             if (oldConnectionTreeModel == null)
                 return;
@@ -494,6 +496,26 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
         private void OnPuttySessionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             RefreshObjects(GetRootPuttyNodes().ToList());
+        }
+
+        /// <summary>
+        /// A vault sync runs on a background thread, so the tree update is marshalled
+        /// back to the UI thread here.
+        /// </summary>
+        private void OnBeyondTrustAccountsChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(() => OnBeyondTrustAccountsChanged(sender, args));
+                return;
+            }
+
+            RootBeyondTrustNodeInfo rootNode = Config.BeyondTrust.BeyondTrustSyncManager.Instance.RootNode;
+
+            if (ConnectionTreeModel != null && !ConnectionTreeModel.RootNodes.Contains(rootNode))
+                ConnectionTreeModel.AddRootNode(rootNode);
+
+            RefreshTreeRoots();
         }
 
         private void HandleCollectionPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -571,6 +593,7 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
             return Objects.OfType<RootPuttySessionsNodeInfo>();
         }
 
+
         public void AddConnection()
         {
             try
@@ -628,7 +651,8 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
         private void AddNode(ConnectionInfo newNode)
         {
             if (SelectedNode?.GetTreeNodeType() == TreeNodeType.PuttyRoot ||
-                SelectedNode?.GetTreeNodeType() == TreeNodeType.PuttySession)
+                SelectedNode?.GetTreeNodeType() == TreeNodeType.PuttySession ||
+                RootBeyondTrustNodeInfo.IsBeyondTrustNode(SelectedNode))
                 return;
 
             // the new node will survive filtering if filtering is active
@@ -657,6 +681,9 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
             if (selectedNodeType != TreeNodeType.Connection && selectedNodeType != TreeNodeType.Container)
                 return;
 
+            if (RootBeyondTrustNodeInfo.IsBeyondTrustNode(SelectedNode))
+                return;
+
             ConnectionInfo newNode = SelectedNode.Clone();
             SelectedNode.Parent.AddChildBelow(newNode, SelectedNode);
             newNode.Parent.SetChildBelow(newNode, SelectedNode);
@@ -673,6 +700,7 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
         public void DeleteSelectedNode()
         {
             if (SelectedNode is RootNodeInfo || SelectedNode is PuttySessionInfo) return;
+            if (RootBeyondTrustNodeInfo.IsBeyondTrustNode(SelectedNode)) return;
             if (!NodeDeletionConfirmer.Confirm(SelectedNode)) return;
             ConnectionTreeModel.DeleteNode(SelectedNode);
         }
@@ -847,7 +875,8 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
             if (_nodeInEditMode || sender is not ConnectionTree)
                 return;
 
-            if (!_allowEdit || SelectedNode is PuttySessionInfo || SelectedNode is RootPuttySessionsNodeInfo)
+            if (!_allowEdit || SelectedNode is PuttySessionInfo || SelectedNode is RootPuttySessionsNodeInfo ||
+                RootBeyondTrustNodeInfo.IsBeyondTrustNode(SelectedNode))
             {
                 e.CancelEdit = true;
                 return;

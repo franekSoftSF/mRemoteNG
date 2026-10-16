@@ -2831,4 +2831,16 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="OptionNotFound" xml:space="preserve">
     <value>Option not found.</value>
   </data>
+  <data name="ECPBeyondTrustPasswordSafe" xml:space="preserve">
+    <value>BeyondTrust Password Safe</value>
+  </data>
+  <data name="BeyondTrustRootName" xml:space="preserve">
+    <value>BeyondTrust Password Safe</value>
+  </data>
+  <data name="BeyondTrustRefresh" xml:space="preserve">
+    <value>Refresh BeyondTrust accounts</value>
+  </data>
+  <data name="BeyondTrustSyncFailed" xml:space="preserve">
+    <value>Could not read accounts from BeyondTrust Password Safe</value>
+  </data>
 </root>

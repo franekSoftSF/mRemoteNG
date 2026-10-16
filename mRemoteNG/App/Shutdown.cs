@@ -39,6 +39,7 @@ namespace mRemoteNG.App
             try
             {
                 StopPuttySessionWatcher();
+                StopBeyondTrustSync();
                 DisposeNotificationAreaIcon();
                 SaveConnections();
                 SaveSettings(quickConnectToolStrip, externalToolsToolStrip, multiSshToolStrip, frmMain);
@@ -53,6 +54,11 @@ namespace mRemoteNG.App
         private static void StopPuttySessionWatcher()
         {
             PuttySessionsManager.Instance.StopWatcher();
+        }
+
+        private static void StopBeyondTrustSync()
+        {
+            Config.BeyondTrust.BeyondTrustSyncManager.Instance.Shutdown();
         }
 
         private static void DisposeNotificationAreaIcon()

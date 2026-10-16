@@ -618,6 +618,17 @@ namespace mRemoteNG.Connection.Protocol.RDP
                         Event_ErrorOccured(this, "Passwordstate Interface Error: " + ex.Message, 0);
                     }
                 }
+                else if (InterfaceControl.Info.ExternalCredentialProvider == ExternalCredentialProvider.BeyondTrustPasswordSafe)
+                {
+                    try
+                    {
+                        ExternalConnectors.BT.BeyondTrustInterface.FetchSecretFromServer($"{userViaApi}", out userName, out password, out domain, out pkey);
+                    }
+                    catch (Exception ex)
+                    {
+                        Event_ErrorOccured(this, "BeyondTrust Password Safe Interface Error: " + ex.Message, 0);
+                    }
+                }
                 else if (InterfaceControl.Info.ExternalCredentialProvider == ExternalCredentialProvider.OnePassword)
                 {
                     try

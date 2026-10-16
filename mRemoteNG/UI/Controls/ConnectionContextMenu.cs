@@ -534,6 +534,14 @@ namespace mRemoteNG.UI.Controls
                 {
                     ShowHideMenuItemsForRootPuttyNode();
                 }
+                else if (_connectionTree.SelectedNode is RootBeyondTrustNodeInfo)
+                {
+                    ShowHideMenuItemsForRootPuttyNode();
+                }
+                else if (RootBeyondTrustNodeInfo.IsBeyondTrustNode(_connectionTree.SelectedNode))
+                {
+                    ShowHideMenuItemsForBeyondTrustNode(_connectionTree.SelectedNode);
+                }
                 else if (_connectionTree.SelectedNode is RootNodeInfo)
                 {
                     ShowHideMenuItemsForRootConnectionNode();
@@ -642,6 +650,31 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeImport.Enabled = false;
             _cMenTreeExportFile.Enabled = false;
             _cMenTreeConnectWithOptionsViewOnly.Enabled = false;
+            _cMenTreeApplyInheritanceToChildren.Enabled = false;
+            _cMenTreeApplyDefaultInheritance.Enabled = false;
+        }
+
+        /// <summary>
+        /// Mirrored vault entries can be connected to, but not changed: the next sync
+        /// would throw any change away.
+        /// </summary>
+        internal void ShowHideMenuItemsForBeyondTrustNode(ConnectionInfo connectionInfo)
+        {
+            if (connectionInfo is ContainerInfo containerInfo)
+                ShowHideMenuItemsForContainer(containerInfo);
+            else
+                ShowHideMenuItemsForConnectionNode(connectionInfo);
+
+            _cMenTreeAddConnection.Enabled = false;
+            _cMenTreeAddFolder.Enabled = false;
+            _cMenTreeAddRoot.Enabled = false;
+            _cMenTreeDuplicate.Enabled = false;
+            _cMenTreeRename.Enabled = false;
+            _cMenTreeDelete.Enabled = false;
+            _cMenTreeMoveUp.Enabled = false;
+            _cMenTreeMoveDown.Enabled = false;
+            _cMenTreeImport.Enabled = false;
+            _cMenTreeToolsSort.Enabled = false;
             _cMenTreeApplyInheritanceToChildren.Enabled = false;
             _cMenTreeApplyDefaultInheritance.Enabled = false;
         }

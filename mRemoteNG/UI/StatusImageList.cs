@@ -45,6 +45,7 @@ namespace mRemoteNG.UI
         {
             if (connectionInfo == null) return "";
             if (connectionInfo is RootPuttySessionsNodeInfo) return "PuttySessions";
+            if (connectionInfo is RootBeyondTrustNodeInfo) return "Root";
             if (connectionInfo is RootNodeInfo) return "Root";
             if (connectionInfo is ContainerInfo { IsRootGroup: true }) return "Root";
             if (connectionInfo is ContainerInfo) return "Folder";

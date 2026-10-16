@@ -142,6 +142,30 @@ namespace mRemoteNG.Connection.Protocol
             Close();
         }
 
+        /// <summary>
+        /// Hands a password release that was taken from an external vault back, so the
+        /// vault does not keep it checked out after the connection is gone.
+        /// </summary>
+        private void CheckInExternalCredentialRelease()
+        {
+            ConnectionInfo info = _interfaceControl?.Info;
+            if (info == null || info.ExternalCredentialProvider != ExternalCredentialProvider.BeyondTrustPasswordSafe)
+                return;
+
+            if (string.IsNullOrEmpty(info.UserViaAPI))
+                return;
+
+            try
+            {
+                ExternalConnectors.BT.BeyondTrustInterface.CheckIn(info.UserViaAPI);
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector?.AddExceptionStackTrace(
+                    "Could not check the BeyondTrust password release back in", ex);
+            }
+        }
+
         public virtual void Close()
         {
             Thread t = new(CloseBG);
@@ -153,6 +177,7 @@ namespace mRemoteNG.Connection.Protocol
         private void CloseBG()
         {
             ClosedEvent?.Invoke(this);
+            CheckInExternalCredentialRelease();
             try
             {
                 tmrReconnect.Enabled = false;

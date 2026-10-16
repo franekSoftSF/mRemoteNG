@@ -14,6 +14,7 @@ namespace mRemoteNG.UI.Menu
         private ToolStripMenuItem _mMenToolsExternalApps;
         private ToolStripMenuItem _mMenToolsPortScan;
         private ToolStripMenuItem _mMenToolsUvncsc;
+        private ToolStripMenuItem _mMenToolsBeyondTrustRefresh;
 
         public Form MainForm { get; set; }
         public ICredentialRepositoryList CredentialProviderCatalog { get; set; }
@@ -29,15 +30,17 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsUvncsc = new ToolStripMenuItem();
             _mMenToolsExternalApps = new ToolStripMenuItem();
             _mMenToolsPortScan = new ToolStripMenuItem();
-            // 
+            _mMenToolsBeyondTrustRefresh = new ToolStripMenuItem();
+            //
             // mMenTools
-            // 
+            //
             DropDownItems.AddRange(new ToolStripItem[]
             {
                 _mMenToolsSshTransfer,
                 _mMenToolsUvncsc,
                 _mMenToolsExternalApps,
-                _mMenToolsPortScan
+                _mMenToolsPortScan,
+                _mMenToolsBeyondTrustRefresh
             });
             Name = "mMenTools";
             Size = new System.Drawing.Size(48, 20);
@@ -74,6 +77,14 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsPortScan.Size = new System.Drawing.Size(184, 22);
             _mMenToolsPortScan.Text = Language.PortScan;
             _mMenToolsPortScan.Click += mMenToolsPortScan_Click;
+            //
+            // mMenToolsBeyondTrustRefresh
+            //
+            _mMenToolsBeyondTrustRefresh.Image = Properties.Resources.SyncArrow_16x;
+            _mMenToolsBeyondTrustRefresh.Name = "mMenToolsBeyondTrustRefresh";
+            _mMenToolsBeyondTrustRefresh.Size = new System.Drawing.Size(184, 22);
+            _mMenToolsBeyondTrustRefresh.Text = Language.BeyondTrustRefresh;
+            _mMenToolsBeyondTrustRefresh.Click += mMenToolsBeyondTrustRefresh_Click;
         }
 
         public void ApplyLanguage()
@@ -82,6 +93,7 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsSshTransfer.Text = Language.SshFileTransfer;
             _mMenToolsExternalApps.Text = Language.ExternalTool;
             _mMenToolsPortScan.Text = Language.PortScan;
+            _mMenToolsBeyondTrustRefresh.Text = Language.BeyondTrustRefresh;
         }
 
         #region Tools
@@ -104,6 +116,11 @@ namespace mRemoteNG.UI.Menu
         private void mMenToolsPortScan_Click(object sender, EventArgs e)
         {
             AppWindows.Show(WindowType.PortScan);
+        }
+
+        private void mMenToolsBeyondTrustRefresh_Click(object sender, EventArgs e)
+        {
+            Config.BeyondTrust.BeyondTrustSyncManager.Instance.SyncAsync();
         }
 
         private void mMenToolsOptions_Click(object sender, EventArgs e)

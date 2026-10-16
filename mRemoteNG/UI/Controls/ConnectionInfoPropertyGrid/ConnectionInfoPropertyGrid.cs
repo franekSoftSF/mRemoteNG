@@ -215,7 +215,8 @@ namespace mRemoteNG.UI.Controls.ConnectionInfoPropertyGrid {
                 strHide.Add(nameof(AbstractConnectionRecord.VaultOpenbaoMount));
                 strHide.Add(nameof(AbstractConnectionRecord.VaultOpenbaoRole));
             } else if (SelectedConnectionInfo.ExternalCredentialProvider == ExternalCredentialProvider.DelineaSecretServer
-                  || SelectedConnectionInfo.ExternalCredentialProvider == ExternalCredentialProvider.ClickstudiosPasswordState) {
+                  || SelectedConnectionInfo.ExternalCredentialProvider == ExternalCredentialProvider.ClickstudiosPasswordState
+                  || SelectedConnectionInfo.ExternalCredentialProvider == ExternalCredentialProvider.BeyondTrustPasswordSafe) {
                 strHide.Add(nameof(AbstractConnectionRecord.Username));
                 strHide.Add(nameof(AbstractConnectionRecord.Password));
                 strHide.Add(nameof(AbstractConnectionRecord.Domain));

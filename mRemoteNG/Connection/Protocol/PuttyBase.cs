@@ -376,6 +376,28 @@ namespace mRemoteNG.Connection.Protocol
                                 Event_ErrorOccured(this, "Passwordstate Interface Error: " + ex.Message, 0);
                             }
                         }
+                        else if (InterfaceControl.Info?.ExternalCredentialProvider == ExternalCredentialProvider.BeyondTrustPasswordSafe)
+                        {
+                            try
+                            {
+                                ExternalConnectors.BT.BeyondTrustInterface.FetchSecretFromServer($"{UserViaAPI}", out username, out password, out _, out privatekey);
+
+                                if (!string.IsNullOrEmpty(privatekey))
+                                {
+                                    optionalTemporaryPrivateKeyPath = Path.GetTempFileName();
+                                    _temporaryPrivateKeyPath = optionalTemporaryPrivateKeyPath;
+                                    File.WriteAllText(optionalTemporaryPrivateKeyPath, privatekey);
+                                    FileInfo fileInfo = new(optionalTemporaryPrivateKeyPath)
+                                    {
+                                        Attributes = FileAttributes.Temporary
+                                    };
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Event_ErrorOccured(this, "BeyondTrust Password Safe Interface Error: " + ex.Message, 0);
+                            }
+                        }
                         else if (InterfaceControl.Info?.ExternalCredentialProvider == ExternalCredentialProvider.OnePassword) {
                             try
                             {

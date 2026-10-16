@@ -153,6 +153,11 @@ namespace mRemoteNG.Connection
             {
                 _puttySessionsManager.AddSessions();
                 newConnectionTreeModel.RootNodes.AddRange(_puttySessionsManager.RootPuttySessionsNodes);
+
+                // the mirrored vault accounts survive a reload of the connection file;
+                // appended after the real root so the savers keep ignoring them
+                if (Config.BeyondTrust.BeyondTrustSyncManager.Instance.HasSynced)
+                    newConnectionTreeModel.RootNodes.Add(Config.BeyondTrust.BeyondTrustSyncManager.Instance.RootNode);
             }
 
             ConnectionTreeModel = newConnectionTreeModel;

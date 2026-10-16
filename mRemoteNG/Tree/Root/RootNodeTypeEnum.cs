@@ -3,6 +3,7 @@
     public enum RootNodeType
     {
         Connection,
-        PuttySessions
+        PuttySessions,
+        BeyondTrust
     }
 }

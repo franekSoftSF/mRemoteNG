@@ -7934,5 +7934,41 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to BeyondTrust Password Safe.
+        /// </summary>
+        internal static string ECPBeyondTrustPasswordSafe {
+            get {
+                return ResourceManager.GetString("ECPBeyondTrustPasswordSafe", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to BeyondTrust Password Safe.
+        /// </summary>
+        internal static string BeyondTrustRootName {
+            get {
+                return ResourceManager.GetString("BeyondTrustRootName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh BeyondTrust accounts.
+        /// </summary>
+        internal static string BeyondTrustRefresh {
+            get {
+                return ResourceManager.GetString("BeyondTrustRefresh", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Could not read accounts from BeyondTrust Password Safe.
+        /// </summary>
+        internal static string BeyondTrustSyncFailed {
+            get {
+                return ResourceManager.GetString("BeyondTrustSyncFailed", resourceCulture);
+            }
+        }
     }
 }

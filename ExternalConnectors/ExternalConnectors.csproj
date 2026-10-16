@@ -24,6 +24,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Update="AWS\AWSConnectionForm.cs" />
+    <Compile Update="BT\BTConnectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="CPS\CPSConnectionForm.cs" />
     <Compile Update="DSS\SSConnectionForm.cs" />
     <Compile Update="VO\VaultOpenbaoConnectionForm.cs">
