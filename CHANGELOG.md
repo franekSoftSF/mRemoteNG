@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - BeyondTrust Password Safe: connector for the BeyondInsight API v3 plus a tree root that mirrors every requestable managed account, with the password released per connection and checked back in on disconnect
 
 ### Updated
+- Rebuilt the MSI installer on WiX 5: SDK-style project that needs no installed toolset, file harvesting without heat, custom actions on WixToolset.Dtf, and a launch condition for the .NET 10 Desktop Runtime instead of the obsolete .NET Framework 4 and Windows 7 checks
 - Migrated all projects to .NET 10 (net10.0-windows10.0.26100.0); removed obsolete SpecFlow-based mRemoteNGSpecs project and fixed mRemoteNGTests compilation
 
 ## [1.78.2]

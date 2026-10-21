@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?include $(sys.CURRENTDIR)Includes\Config.wxi?>
+
+  <Fragment>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLDIR" Name="$(var.ProductName)" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)" />
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <!--
+      Everything the application build produced. The main executable is declared
+      separately below so the MSI version can be bound to its file version, and
+      the debug symbols and XML doc files are not worth shipping.
+    -->
+    <ComponentGroup Id="MandatoryComponents" Directory="INSTALLDIR">
+      <Files Include="$(var.HarvestPath)\**">
+        <Exclude Files="$(var.HarvestPath)\$(var.ExeProcessName)" />
+        <Exclude Files="$(var.HarvestPath)\**\*.pdb" />
+        <Exclude Files="$(var.HarvestPath)\**\*.xml" />
+      </Files>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="CG.MainExe">
+      <Component Id="C.MainExe" Directory="INSTALLDIR" Guid="a028ee50-3135-46c7-83c0-1d14d36e146c">
+        <File Id="MainExeFile" Source="$(var.HarvestPath)\$(var.ExeProcessName)" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="CG.ProjectInfoFiles" Directory="INSTALLDIR">
+      <Component Id="C.Changelog" Guid="762459f4-0460-4058-a448-d0f4e5cd4a65">
+        <File Id="ChangelogFile" Name="Changelog.md" Source="$(var.RepoRoot)CHANGELOG.md" KeyPath="yes" />
+      </Component>
+      <Component Id="C.License" Guid="89e79101-fcf9-4277-b948-1fd5f1fcae69">
+        <File Id="LicenseFile" Name="License.txt" Source="$(var.RepoRoot)COPYING.TXT" KeyPath="yes" />
+      </Component>
+      <Component Id="C.Readme" Guid="1359cc74-fe51-4c6e-81f4-2bee7871c40f">
+        <File Id="ReadmeFile" Name="Readme.md" Source="$(var.RepoRoot)README.md" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="CG.RegistryEntries">
+      <Component Id="C.RegistryEntries" Directory="INSTALLDIR" Guid="888643e4-4c52-45d3-801a-0d0d71c737fe">
+        <RegistryKey Root="HKLM" Key="Software\mRemoteNG">
+          <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLDIR]" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="CG.Shortcuts">
+      <Component Id="C.DesktopShortcut" Directory="DesktopFolder" Guid="F78E5A16-A2F7-4BD9-9250-CBF3016CCCDA">
+        <Shortcut Id="DesktopShortcut" Name="$(var.ProductName)" Target="[INSTALLDIR][MAINEXE]"
+                  WorkingDirectory="INSTALLDIR" Icon="AppIcon.ico" />
+        <RegistryValue Root="HKCU" Key="Software\$(var.ProductName)" Name="DesktopShortcut"
+                       Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <Component Id="C.ApplicationStartMenuShortcut" Directory="ApplicationProgramsFolder"
+                 Guid="193B9E14-F40E-44F1-8514-BED253BCBF75">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.ProductName)" Target="[INSTALLDIR][MAINEXE]"
+                  WorkingDirectory="INSTALLDIR" Icon="AppIcon.ico" />
+        <Shortcut Id="LicenseShortcut" Name="!(loc.File_License)" Target="[INSTALLDIR]License.txt"
+                  WorkingDirectory="INSTALLDIR" />
+        <Shortcut Id="ReadmeShortcut" Name="Readme" Target="[INSTALLDIR]Readme.md"
+                  WorkingDirectory="INSTALLDIR" />
+        <Shortcut Id="ChangelogShortcut" Name="!(loc.File_VersionHistory)" Target="[INSTALLDIR]Changelog.md"
+                  WorkingDirectory="INSTALLDIR" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\$(var.ProductName)" Name="ApplicationStartMenuShortcut"
+                       Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
