@@ -67,6 +67,8 @@ namespace mRemoteNG.Config.Serializers.ConnectionSerializers.Xml
             element.Add(new XAttribute("SSHTunnelConnectionName", connectionInfo.SSHTunnelConnectionName));
             element.Add(new XAttribute("OpeningCommand", connectionInfo.OpeningCommand));
             element.Add(new XAttribute("SSHOptions", connectionInfo.SSHOptions));
+            element.Add(new XAttribute("SmartcardCertificate", connectionInfo.SmartcardCertificate));
+            element.Add(new XAttribute("SshAgentForwarding", connectionInfo.SshAgentForwarding.ToString().ToLowerInvariant()));
             element.Add(new XAttribute("PuttySession", connectionInfo.PuttySession));
             element.Add(new XAttribute("Port", connectionInfo.Port));
             element.Add(new XAttribute("ConnectToConsole", connectionInfo.UseConsoleSession.ToString().ToLowerInvariant()));
@@ -200,6 +202,10 @@ namespace mRemoteNG.Config.Serializers.ConnectionSerializers.Xml
                     element.Add(new XAttribute("InheritOpeningCommand", inheritance.OpeningCommand.ToString().ToLowerInvariant()));
                 if (inheritance.SSHOptions)
                     element.Add(new XAttribute("InheritSSHOptions", inheritance.SSHOptions.ToString().ToLowerInvariant()));
+                    if (inheritance.SmartcardCertificate)
+                        element.Add(new XAttribute("InheritSmartcardCertificate", inheritance.SmartcardCertificate.ToString().ToLowerInvariant()));
+                    if (inheritance.SshAgentForwarding)
+                        element.Add(new XAttribute("InheritSshAgentForwarding", inheritance.SshAgentForwarding.ToString().ToLowerInvariant()));
                 if (inheritance.PuttySession)
                     element.Add(new XAttribute("InheritPuttySession", inheritance.PuttySession.ToString().ToLowerInvariant()));
                 if (inheritance.RedirectDiskDrives)

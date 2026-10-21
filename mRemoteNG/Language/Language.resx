@@ -2843,4 +2843,28 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="BeyondTrustSyncFailed" xml:space="preserve">
     <value>Could not read accounts from BeyondTrust Password Safe</value>
   </data>
+  <data name="SmartcardCertificate" xml:space="preserve">
+    <value>Smart card certificate</value>
+  </data>
+  <data name="PropertyDescriptionSmartcardCertificate" xml:space="preserve">
+    <value>Certificate used for SSH public key authentication, for example CAPI:&lt;thumbprint&gt; for the Windows certificate store, PKCS:&lt;thumbprint&gt;=&lt;library&gt; or FIDO:ssh:&lt;name&gt;. Requires PuTTY CAC as the SSH client; the bundled PuTTYNG cannot read certificates.</value>
+  </data>
+  <data name="SshAgentForwarding" xml:space="preserve">
+    <value>Forward SSH agent</value>
+  </data>
+  <data name="PropertyDescriptionSshAgentForwarding" xml:space="preserve">
+    <value>Forwards the local Pageant agent to the host (-A), which lets sudo authenticate against the same card. While the session is open, anyone with root on that host can use the agent to act as you, so enable it only for trusted hosts.</value>
+  </data>
+  <data name="SelectSmartcardCertificate" xml:space="preserve">
+    <value>Select smart card certificate</value>
+  </data>
+  <data name="SmartcardNoCertificatesFound" xml:space="preserve">
+    <value>No certificate with a key on a smart card was found. Insert the card and try again, or show all certificates.</value>
+  </data>
+  <data name="SmartcardShowAllCertificates" xml:space="preserve">
+    <value>Show all certificates with a private key</value>
+  </data>
+  <data name="SmartcardRequiresPuttyCac" xml:space="preserve">
+    <value>A smart card certificate is configured, but the SSH client is the bundled PuTTYNG, which has no certificate support. Set Options, Advanced, custom PuTTY path to PuTTY CAC.</value>
+  </data>
 </root>

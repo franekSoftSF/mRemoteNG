@@ -133,6 +133,16 @@ namespace mRemoteNG.Config.Serializers.ConnectionSerializers.Csv
                 ? connectionCsv[headers.IndexOf("SSHOptions")]
                 : "";
 
+            connectionRecord.SmartcardCertificate = headers.Contains("SmartcardCertificate")
+                ? connectionCsv[headers.IndexOf("SmartcardCertificate")]
+                : "";
+
+            if (headers.Contains("SshAgentForwarding"))
+            {
+                if (bool.TryParse(connectionCsv[headers.IndexOf("SshAgentForwarding")], out bool sshAgentForwarding))
+                    connectionRecord.SshAgentForwarding = sshAgentForwarding;
+            }
+
             connectionRecord.SSHTunnelConnectionName = headers.Contains("SSHTunnelConnectionName")
                 ? connectionCsv[headers.IndexOf("SSHTunnelConnectionName")]
                 : "";
@@ -611,6 +621,18 @@ namespace mRemoteNG.Config.Serializers.ConnectionSerializers.Csv
             {
                 if (bool.TryParse(connectionCsv[headers.IndexOf("InheritSSHOptions")], out bool value))
                     connectionRecord.Inheritance.SSHOptions = value;
+            }
+
+            if (headers.Contains("InheritSmartcardCertificate"))
+            {
+                if (bool.TryParse(connectionCsv[headers.IndexOf("InheritSmartcardCertificate")], out bool value))
+                    connectionRecord.Inheritance.SmartcardCertificate = value;
+            }
+
+            if (headers.Contains("InheritSshAgentForwarding"))
+            {
+                if (bool.TryParse(connectionCsv[headers.IndexOf("InheritSshAgentForwarding")], out bool value))
+                    connectionRecord.Inheritance.SshAgentForwarding = value;
             }
 
             if (headers.Contains("InheritPuttySession"))

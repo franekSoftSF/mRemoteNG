@@ -7970,5 +7970,77 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("BeyondTrustSyncFailed", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Smart card certificate.
+        /// </summary>
+        internal static string SmartcardCertificate {
+            get {
+                return ResourceManager.GetString("SmartcardCertificate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the description of the smart card certificate property.
+        /// </summary>
+        internal static string PropertyDescriptionSmartcardCertificate {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionSmartcardCertificate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Forward SSH agent.
+        /// </summary>
+        internal static string SshAgentForwarding {
+            get {
+                return ResourceManager.GetString("SshAgentForwarding", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the description of the SSH agent forwarding property.
+        /// </summary>
+        internal static string PropertyDescriptionSshAgentForwarding {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionSshAgentForwarding", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Select smart card certificate.
+        /// </summary>
+        internal static string SelectSmartcardCertificate {
+            get {
+                return ResourceManager.GetString("SelectSmartcardCertificate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No certificate with a key on a smart card was found..
+        /// </summary>
+        internal static string SmartcardNoCertificatesFound {
+            get {
+                return ResourceManager.GetString("SmartcardNoCertificatesFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Show all certificates with a private key.
+        /// </summary>
+        internal static string SmartcardShowAllCertificates {
+            get {
+                return ResourceManager.GetString("SmartcardShowAllCertificates", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the warning that PuTTY CAC is required.
+        /// </summary>
+        internal static string SmartcardRequiresPuttyCac {
+            get {
+                return ResourceManager.GetString("SmartcardRequiresPuttyCac", resourceCulture);
+            }
+        }
     }
 }

@@ -78,6 +78,8 @@
         public TType RdpVersion { get; set; }
         public TType UseEnhancedMode { get; set; }
         public TType SSHOptions { get; set; }
+        public TType SmartcardCertificate { get; set; }
+        public TType SshAgentForwarding { get; set; }
         public TType SSHTunnelConnectionName { get; set; }
         public TType RDPStartProgram { get; set; }
         public TType RDPStartProgramWorkDir { get; set; }

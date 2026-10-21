@@ -121,6 +121,36 @@ namespace mRemoteNG.Connection.Protocol
             }
         }
 
+        /// <summary>
+        /// Passes a smart card certificate to PuTTY CAC, which takes it in place of a
+        /// key file: CAPI:&lt;thumbprint&gt; for the Windows certificate store,
+        /// PKCS:&lt;thumbprint&gt;=&lt;library&gt; or FIDO:ssh:&lt;name&gt;.
+        ///
+        /// -x509off is added as well. Without it PuTTY CAC offers the key as
+        /// x509v3-ssh-rsa (RFC 6187), which OpenSSH does not implement, and the server
+        /// answers with "Server refused our key".
+        /// </summary>
+        private void AddSmartcardArguments(CommandLineArguments arguments)
+        {
+            string certificate = InterfaceControl.Info?.SmartcardCertificate ?? "";
+            if (string.IsNullOrEmpty(certificate))
+                return;
+
+            if (_isPuttyNg)
+            {
+                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg, Language.SmartcardRequiresPuttyCac);
+                return;
+            }
+
+            string normalized = Tools.SmartcardCertificateStore.NormalizeCapiIdentifier(certificate);
+            if (normalized != certificate)
+                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                    $"Smart card certificate given as a SHA-256 fingerprint, using the SHA-1 thumbprint instead: {normalized}", true);
+
+            arguments.Add("-x509off");
+            arguments.Add("-i", normalized);
+        }
+
         private void CleanupTemporaryPrivateKey()
         {
             if (string.IsNullOrEmpty(_temporaryPrivateKeyPath))
@@ -512,6 +542,12 @@ namespace mRemoteNG.Connection.Protocol
                             arguments.Add("-i", optionalTemporaryPrivateKeyPath);
                         }
 
+                        AddSmartcardArguments(arguments);
+
+                        if (InterfaceControl.Info?.SshAgentForwarding == true)
+                        {
+                            arguments.Add("-A");
+                        }
                     }
 
                     arguments.Add("-P", InterfaceControl.Info?.Port.ToString());

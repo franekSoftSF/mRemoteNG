@@ -49,6 +49,8 @@ namespace mRemoteNG.Connection
         private string _extApp;
         private int _port;
         private string _sshOptions = "";
+        private string _smartcardCertificate = "";
+        private bool _sshAgentForwarding;
         private string _puttySession;
         private bool _useConsoleSession;
         private AuthenticationLevel _rdpAuthenticationLevel;
@@ -422,6 +424,28 @@ namespace mRemoteNG.Connection
         {
             get => GetPropertyValue("SSHOptions", _sshOptions);
             set => SetField(ref _sshOptions, value, "SSHOptions");
+        }
+
+        [LocalizedAttributes.LocalizedCategory(nameof(Language.Connection), 2),
+         LocalizedAttributes.LocalizedDisplayName(nameof(Language.SmartcardCertificate)),
+         LocalizedAttributes.LocalizedDescription(nameof(Language.PropertyDescriptionSmartcardCertificate)),
+         Editor(typeof(UI.Controls.SmartcardCertificateEditor), typeof(System.Drawing.Design.UITypeEditor)),
+         AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2)]
+        public virtual string SmartcardCertificate
+        {
+            get => GetPropertyValue("SmartcardCertificate", _smartcardCertificate);
+            set => SetField(ref _smartcardCertificate, value?.Trim(), "SmartcardCertificate");
+        }
+
+        [LocalizedAttributes.LocalizedCategory(nameof(Language.Protocol), 3),
+         LocalizedAttributes.LocalizedDisplayName(nameof(Language.SshAgentForwarding)),
+         LocalizedAttributes.LocalizedDescription(nameof(Language.PropertyDescriptionSshAgentForwarding)),
+         TypeConverter(typeof(MiscTools.YesNoTypeConverter)),
+         AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2)]
+        public bool SshAgentForwarding
+        {
+            get => GetPropertyValue("SshAgentForwarding", _sshAgentForwarding);
+            set => SetField(ref _sshAgentForwarding, value, "SshAgentForwarding");
         }
 
         [LocalizedAttributes.LocalizedCategory(nameof(Language.Protocol), 3),
