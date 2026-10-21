@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -116,39 +117,89 @@ namespace mRemoteNG.Tools
         }
 
         /// <summary>
-        /// True when the private key of this certificate is held by the smart card key
-        /// storage provider. Certificates whose key container is missing throw here, so
-        /// every failure counts as "not on a card".
+        /// True when the private key of this certificate belongs to a smart card
+        /// provider.
+        ///
+        /// The provider name is read from the certificate's stored key provider info.
+        /// Opening the key instead would make Windows reach for the matching card, and
+        /// a store that holds certificates of cards which are not plugged in then puts
+        /// up a "select a smart card device" prompt and blocks for minutes.
         /// </summary>
         public static bool IsOnSmartCard(X509Certificate2 certificate)
         {
-            try
-            {
-                using RSA rsa = certificate.GetRSAPrivateKey();
-                if (rsa is RSACng rsaCng)
-                    return rsaCng.Key.Provider?.Provider == SmartCardKeyStorageProvider;
+            string provider = GetKeyProviderName(certificate);
 
-                using ECDsa ecdsa = certificate.GetECDsaPrivateKey();
-                if (ecdsa is ECDsaCng ecdsaCng)
-                    return ecdsaCng.Key.Provider?.Provider == SmartCardKeyStorageProvider;
-            }
-            catch (Exception)
-            {
-                // a dead key container, a legacy CSP key or no access to the key
-            }
-
-            return false;
+            return provider != null &&
+                   provider.Contains("Smart Card", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool HasPrivateKey(X509Certificate2 certificate)
         {
+            // again metadata only: a certificate with key provider info has a key
+            // associated with it, whether or not that key can still be reached
+            return GetKeyProviderName(certificate) != null;
+        }
+
+        /// <summary>
+        /// Reads CERT_KEY_PROV_INFO_PROP_ID, the provider recorded for this certificate
+        /// in the store. Returns null when the certificate has no key associated.
+        /// </summary>
+        private static string GetKeyProviderName(X509Certificate2 certificate)
+        {
+            const uint certKeyProvInfoPropId = 2;
+
             try
             {
-                return certificate.HasPrivateKey;
+                IntPtr handle = certificate.Handle;
+                if (handle == IntPtr.Zero)
+                    return null;
+
+                uint size = 0;
+                if (!NativeMethods.CertGetCertificateContextProperty(handle, certKeyProvInfoPropId, IntPtr.Zero, ref size) || size == 0)
+                    return null;
+
+                IntPtr buffer = Marshal.AllocHGlobal((int)size);
+                try
+                {
+                    if (!NativeMethods.CertGetCertificateContextProperty(handle, certKeyProvInfoPropId, buffer, ref size))
+                        return null;
+
+                    NativeMethods.CRYPT_KEY_PROV_INFO info =
+                        Marshal.PtrToStructure<NativeMethods.CRYPT_KEY_PROV_INFO>(buffer);
+
+                    return info.pwszProvName;
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(buffer);
+                }
             }
             catch (Exception)
             {
-                return false;
+                return null;
+            }
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport("crypt32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool CertGetCertificateContextProperty(
+                IntPtr pCertContext,
+                uint dwPropId,
+                IntPtr pvData,
+                ref uint pcbData);
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct CRYPT_KEY_PROV_INFO
+            {
+                [MarshalAs(UnmanagedType.LPWStr)] public string pwszContainerName;
+                [MarshalAs(UnmanagedType.LPWStr)] public string pwszProvName;
+                public uint dwProvType;
+                public uint dwFlags;
+                public uint cProvParam;
+                public IntPtr rgProvParam;
+                public uint dwKeySpec;
             }
         }
 

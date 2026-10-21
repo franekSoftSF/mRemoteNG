@@ -2020,6 +2020,54 @@ namespace mRemoteNG.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool InhDefaultSmartcardCertificate {
+            get {
+                return ((bool)(this["InhDefaultSmartcardCertificate"]));
+            }
+            set {
+                this["InhDefaultSmartcardCertificate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ConDefaultSmartcardCertificate {
+            get {
+                return ((string)(this["ConDefaultSmartcardCertificate"]));
+            }
+            set {
+                this["ConDefaultSmartcardCertificate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool InhDefaultSshAgentForwarding {
+            get {
+                return ((bool)(this["InhDefaultSshAgentForwarding"]));
+            }
+            set {
+                this["InhDefaultSshAgentForwarding"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ConDefaultSshAgentForwarding {
+            get {
+                return ((bool)(this["ConDefaultSshAgentForwarding"]));
+            }
+            set {
+                this["ConDefaultSshAgentForwarding"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ConDefaultSSHOptions {
             get {
