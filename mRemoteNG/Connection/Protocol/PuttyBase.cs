@@ -149,6 +149,14 @@ namespace mRemoteNG.Connection.Protocol
 
             arguments.Add("-x509off");
             arguments.Add("-i", normalized);
+
+            // with agent forwarding the remote end talks to Pageant, so the certificate
+            // has to be in the agent before the session is negotiated
+            if (InterfaceControl.Info?.SshAgentForwarding == true)
+            {
+                Tools.PageantLoader.WarnIfAutoloadCertsEnabled();
+                Tools.PageantLoader.EnsureCertificateLoaded(normalized);
+            }
         }
 
         private void CleanupTemporaryPrivateKey()

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [1.78.3]
 ### Added
-- Smart card SSH authentication with PuTTY CAC: new connection properties "Smart card certificate" (CAPI/PKCS/FIDO identifier, with a picker that lists the certificates whose key is on a card) and "Forward SSH agent"; -x509off is passed automatically so OpenSSH accepts the key
+- Smart card SSH authentication with PuTTY CAC: new connection properties "Smart card certificate" (CAPI/PKCS/FIDO identifier, with a picker that lists the certificates whose key is on a card) and "Forward SSH agent"; -x509off is passed automatically so OpenSSH accepts the key, and with agent forwarding the certificate is loaded into Pageant before the session opens
 - BeyondTrust Password Safe: connector for the BeyondInsight API v3 plus a tree root that mirrors every requestable managed account, with the password released per connection and checked back in on disconnect
 
 ### Updated

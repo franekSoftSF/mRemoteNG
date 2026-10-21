@@ -8035,6 +8035,42 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to pageant.exe was not found next to the configured PuTTY.
+        /// </summary>
+        internal static string PageantNotFound {
+            get {
+                return ResourceManager.GetString("PageantNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Certificate handed to Pageant.
+        /// </summary>
+        internal static string PageantCertificateLoaded {
+            get {
+                return ResourceManager.GetString("PageantCertificateLoaded", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load the certificate into Pageant.
+        /// </summary>
+        internal static string PageantLoadFailed {
+            get {
+                return ResourceManager.GetString("PageantLoadFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the warning about Pageant autoloading certificates.
+        /// </summary>
+        internal static string PageantAutoloadCertsEnabled {
+            get {
+                return ResourceManager.GetString("PageantAutoloadCertsEnabled", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to the warning that PuTTY CAC is required.
         /// </summary>
         internal static string SmartcardRequiresPuttyCac {
