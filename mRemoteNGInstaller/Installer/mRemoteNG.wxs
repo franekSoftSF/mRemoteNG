@@ -14,7 +14,19 @@
            InstallerVersion="500"
            Compressed="yes">
 
-    <MajorUpgrade DowngradeErrorMessage="!(loc.Upgrade_NewerVersionInstalled)" Schedule="afterInstallExecute" />
+    <!--
+      The old product is removed before the new files are laid down. With the
+      previous "afterInstallExecute" schedule the new files went in first, and
+      Windows Installer skips a file whose version is not higher than the one on
+      disk: every helper assembly here is version 1.0.0.0 for ever, so those kept
+      their old copy and the application loaded stale code.
+
+      AllowSameVersionUpgrades matters because Windows Installer ignores the
+      fourth version field, and nightly builds differ only in that field.
+    -->
+    <MajorUpgrade DowngradeErrorMessage="!(loc.Upgrade_NewerVersionInstalled)"
+                  Schedule="afterInstallInitialize"
+                  AllowSameVersionUpgrades="yes" />
     <MediaTemplate EmbedCab="yes" />
 
     <Property Id="MsiLogging" Value="v" />
