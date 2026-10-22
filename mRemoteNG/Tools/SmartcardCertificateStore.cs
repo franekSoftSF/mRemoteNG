@@ -43,6 +43,13 @@ namespace mRemoteNG.Tools
             /// </summary>
             public bool ContainerPresent { get; init; }
 
+            /// <summary>
+            /// False when the cards could not be read at all, for example because no
+            /// reader answered. Then <see cref="ContainerPresent"/> says nothing and
+            /// callers must not treat the certificate as dead.
+            /// </summary>
+            public bool CardStateKnown { get; init; }
+
             /// <summary>The identifier PuTTY CAC expects for the Windows certificate store.</summary>
             public string CapiIdentifier => $"CAPI:{Thumbprint}";
 
@@ -68,6 +75,7 @@ namespace mRemoteNG.Tools
             }
 
             HashSet<string> liveContainers = GetContainersOnInsertedCards();
+            bool cardStateKnown = liveContainers.Count > 0;
 
             foreach (X509Certificate2 certificate in store.Certificates)
             {
@@ -89,7 +97,8 @@ namespace mRemoteNG.Tools
                     NotAfter = certificate.NotAfter,
                     OnSmartCard = onCard,
                     KeyContainer = container ?? "",
-                    ContainerPresent = container != null && liveContainers.Contains(container)
+                    ContainerPresent = container != null && liveContainers.Contains(container),
+                    CardStateKnown = cardStateKnown
                 });
             }
 

@@ -172,16 +172,24 @@ namespace mRemoteNG.UI.Forms
 
             foreach (SmartcardCertificateStore.CertificateEntry certificate in certificates)
             {
-                if (!certificate.ContainerPresent && !_showStaleBox.Checked)
+                // with no readable card nothing can be called dead, so everything stays
+                // visible rather than the list looking as if no card were present
+                bool hideAsStale = certificate.CardStateKnown && !certificate.ContainerPresent;
+
+                if (hideAsStale && !_showStaleBox.Checked)
                     continue;
 
-                ListViewItem item = new(certificate.ContainerPresent ? "card" : "stale") { Tag = certificate };
+                string state = certificate.CardStateKnown
+                    ? certificate.ContainerPresent ? "card" : "stale"
+                    : "?";
+
+                ListViewItem item = new(state) { Tag = certificate };
                 item.SubItems.Add(certificate.Subject);
                 item.SubItems.Add(certificate.UserPrincipalName);
                 item.SubItems.Add(certificate.NotAfter.ToString("yyyy-MM-dd"));
                 item.SubItems.Add(certificate.Thumbprint);
 
-                if (!certificate.ContainerPresent || certificate.IsExpired)
+                if (hideAsStale || certificate.IsExpired)
                     item.ForeColor = Color.Gray;
 
                 _certificateList.Items.Add(item);
@@ -246,6 +254,8 @@ namespace mRemoteNG.UI.Forms
             SmartcardCertificateStore.CertificateEntry certificate = SelectedCertificate;
             if (certificate == null)
                 lines.Add("FAIL  Certificate: none selected.");
+            else if (!certificate.CardStateKnown)
+                lines.Add("WARN  Certificate: no card could be read, so whether this entry still has its key on a card is unknown. Insert the card and reopen this dialog to check.");
             else if (!certificate.ContainerPresent)
                 lines.Add("FAIL  Certificate: its key container is not on any inserted card, so this entry cannot authenticate.");
             else if (certificate.IsExpired)

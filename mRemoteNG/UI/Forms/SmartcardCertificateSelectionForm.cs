@@ -126,9 +126,9 @@ namespace mRemoteNG.UI.Forms
                 item.SubItems.Add(certificate.Issuer);
                 item.SubItems.Add(certificate.NotAfter.ToString("yyyy-MM-dd"));
                 item.SubItems.Add(certificate.Thumbprint);
-                item.SubItems.Add(certificate.OnSmartCard ? "card" : "software");
+                item.SubItems.Add(certificate.CardStateKnown ? certificate.ContainerPresent ? "card" : "stale" : certificate.OnSmartCard ? "card?" : "software");
 
-                if (certificate.IsExpired)
+                if (certificate.IsExpired || (certificate.CardStateKnown && certificate.OnSmartCard && !certificate.ContainerPresent))
                     item.ForeColor = Color.Gray;
 
                 if (string.Equals(certificate.CapiIdentifier, SelectedIdentifier, StringComparison.OrdinalIgnoreCase))
