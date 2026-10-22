@@ -1,3 +1,4 @@
+using BeyondTrust.PasswordSafe.Client;
 using ExternalConnectors.BT;
 using mRemoteNG.App;
 using mRemoteNG.Connection;
@@ -62,7 +63,7 @@ namespace mRemoteNG.Config.BeyondTrust
 
             try
             {
-                IReadOnlyList<BTManagedAccount> accounts = BeyondTrustInterface.ListManagedAccounts();
+                IReadOnlyList<ManagedAccount> accounts = BeyondTrustInterface.ListManagedAccounts();
                 BuildTree(accounts);
                 HasSynced = true;
                 _refreshTimer.Enabled = true;
@@ -115,13 +116,13 @@ namespace mRemoteNG.Config.BeyondTrust
             Sync();
         }
 
-        private void BuildTree(IReadOnlyList<BTManagedAccount> accounts)
+        private void BuildTree(IReadOnlyList<ManagedAccount> accounts)
         {
             ConnectionInfo[] oldChildren = [.. RootNode.Children];
             foreach (ConnectionInfo child in oldChildren)
                 RootNode.RemoveChild(child);
 
-            foreach (IGrouping<string, BTManagedAccount> systemGroup in accounts
+            foreach (IGrouping<string, ManagedAccount> systemGroup in accounts
                          .GroupBy(a => string.IsNullOrEmpty(a.SystemName) ? a.Host : a.SystemName)
                          .OrderBy(g => g.Key, StringComparer.CurrentCultureIgnoreCase))
             {
@@ -130,14 +131,14 @@ namespace mRemoteNG.Config.BeyondTrust
                     Name = systemGroup.Key
                 };
 
-                foreach (BTManagedAccount account in systemGroup.OrderBy(a => a.AccountName, StringComparer.CurrentCultureIgnoreCase))
+                foreach (ManagedAccount account in systemGroup.OrderBy(a => a.AccountName, StringComparer.CurrentCultureIgnoreCase))
                     systemContainer.AddChild(CreateConnection(account));
 
                 RootNode.AddChild(systemContainer);
             }
         }
 
-        private ConnectionInfo CreateConnection(BTManagedAccount account)
+        private ConnectionInfo CreateConnection(ManagedAccount account)
         {
             ConnectionInfo connection = new()
             {
@@ -146,7 +147,7 @@ namespace mRemoteNG.Config.BeyondTrust
                 Hostname = account.Host,
                 Protocol = MapProtocol(account),
                 ExternalCredentialProvider = ExternalCredentialProvider.BeyondTrustPasswordSafe,
-                UserViaAPI = account.SecretId,
+                UserViaAPI = account.Id,
                 Domain = account.DomainName ?? ""
             };
 
@@ -160,7 +161,7 @@ namespace mRemoteNG.Config.BeyondTrust
         /// Derives the protocol from the Password Safe platform, falling back to the port
         /// of the managed system.
         /// </summary>
-        private static ProtocolType MapProtocol(BTManagedAccount account)
+        private static ProtocolType MapProtocol(ManagedAccount account)
         {
             string platform = account.PlatformName ?? "";
 

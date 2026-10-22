@@ -526,6 +526,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BeyondTrust.PasswordSafe.Client\BeyondTrust.PasswordSafe.Client.csproj" />
     <ProjectReference Include="..\ExternalConnectors\ExternalConnectors.csproj" />
     <ProjectReference Include="..\ObjectListView\ObjectListView.NetCore.csproj" />
   </ItemGroup>

@@ -16,6 +16,9 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BeyondTrust.PasswordSafe.Client\BeyondTrust.PasswordSafe.Client.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AWSSDK.Core" />
     <PackageReference Include="AWSSDK.EC2" />
     <PackageReference Include="BouncyCastle.Cryptography" />

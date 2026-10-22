@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - A SHA-256 fingerprint pasted into the certificate field is translated to the SHA-1 thumbprint PuTTY CAC expects instead of silently matching nothing
 
 ### Updated
+- Split the BeyondTrust API out into BeyondTrust.PasswordSafe.Client, a library with no dependency on mRemoteNG or WinForms, covered by unit tests against a stubbed HTTP handler; the application keeps only the sign in dialog and the glue, and a failed credential read no longer carries the response body, which for that endpoint is the secret itself
 - Rebuilt the MSI installer on WiX 5: SDK-style project that needs no installed toolset, file harvesting without heat, custom actions on WixToolset.Dtf, and a launch condition for the .NET 10 Desktop Runtime instead of the obsolete .NET Framework 4 and Windows 7 checks
 - Migrated all projects to .NET 10 (net10.0-windows10.0.26100.0); removed obsolete SpecFlow-based mRemoteNGSpecs project and fixed mRemoteNGTests compilation
 
