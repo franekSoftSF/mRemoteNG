@@ -32,6 +32,17 @@ namespace mRemoteNG.Tools
             public DateTime NotAfter { get; init; }
             public bool OnSmartCard { get; init; }
 
+            /// <summary>Key container the store entry points at.</summary>
+            public string KeyContainer { get; init; } = "";
+
+            /// <summary>
+            /// True when that key container is present on a card that is plugged in
+            /// right now. A store entry whose container is gone cannot authenticate,
+            /// and Windows reports it as "the smart card cannot perform the requested
+            /// operation or the operation requires a different smart card".
+            /// </summary>
+            public bool ContainerPresent { get; init; }
+
             /// <summary>The identifier PuTTY CAC expects for the Windows certificate store.</summary>
             public string CapiIdentifier => $"CAPI:{Thumbprint}";
 
@@ -56,14 +67,17 @@ namespace mRemoteNG.Tools
                 return entries;
             }
 
+            HashSet<string> liveContainers = GetContainersOnInsertedCards();
+
             foreach (X509Certificate2 certificate in store.Certificates)
             {
-                bool onCard = IsOnSmartCard(certificate);
+                string provider = GetKeyProviderInfo(certificate, out string container);
+                bool onCard = provider != null && provider.Contains("Smart Card", StringComparison.OrdinalIgnoreCase);
 
                 if (onlySmartCard && !onCard)
                     continue;
 
-                if (!onlySmartCard && !HasPrivateKey(certificate))
+                if (!onlySmartCard && provider == null)
                     continue;
 
                 entries.Add(new CertificateEntry
@@ -73,11 +87,16 @@ namespace mRemoteNG.Tools
                     Issuer = certificate.Issuer,
                     UserPrincipalName = GetUserPrincipalName(certificate),
                     NotAfter = certificate.NotAfter,
-                    OnSmartCard = onCard
+                    OnSmartCard = onCard,
+                    KeyContainer = container ?? "",
+                    ContainerPresent = container != null && liveContainers.Contains(container)
                 });
             }
 
-            return [.. entries.OrderByDescending(e => e.OnSmartCard).ThenBy(e => e.Subject, StringComparer.CurrentCultureIgnoreCase)];
+            return [.. entries
+                .OrderByDescending(e => e.ContainerPresent)
+                .ThenByDescending(e => e.OnSmartCard)
+                .ThenBy(e => e.Subject, StringComparer.CurrentCultureIgnoreCase)];
         }
 
         /// <summary>
@@ -127,25 +146,72 @@ namespace mRemoteNG.Tools
         /// </summary>
         public static bool IsOnSmartCard(X509Certificate2 certificate)
         {
-            string provider = GetKeyProviderName(certificate);
+            string provider = GetKeyProviderInfo(certificate, out _);
 
             return provider != null &&
                    provider.Contains("Smart Card", StringComparison.OrdinalIgnoreCase);
         }
 
-        private static bool HasPrivateKey(X509Certificate2 certificate)
+        /// <summary>
+        /// Names of the keys held by cards that are plugged in right now. Enumerating
+        /// the smart card key storage provider reads the cards themselves without
+        /// opening a key, so no PIN is asked for and no card selection prompt appears.
+        ///
+        /// An empty set means no card is readable, which is treated as "cannot tell"
+        /// rather than "every certificate is dead".
+        /// </summary>
+        public static HashSet<string> GetContainersOnInsertedCards()
         {
-            // again metadata only: a certificate with key provider info has a key
-            // associated with it, whether or not that key can still be reached
-            return GetKeyProviderName(certificate) != null;
+            HashSet<string> containers = new(StringComparer.OrdinalIgnoreCase);
+            IntPtr provider = IntPtr.Zero;
+            IntPtr enumState = IntPtr.Zero;
+
+            try
+            {
+                if (NativeMethods.NCryptOpenStorageProvider(out provider, SmartCardKeyStorageProvider, 0) != 0)
+                    return containers;
+
+                while (true)
+                {
+                    int status = NativeMethods.NCryptEnumKeys(provider, null, out IntPtr keyNamePtr, ref enumState, 0);
+                    if (status != 0 || keyNamePtr == IntPtr.Zero)
+                        break;
+
+                    try
+                    {
+                        NativeMethods.NCryptKeyName keyName = Marshal.PtrToStructure<NativeMethods.NCryptKeyName>(keyNamePtr);
+                        if (!string.IsNullOrEmpty(keyName.pszName))
+                            containers.Add(keyName.pszName);
+                    }
+                    finally
+                    {
+                        NativeMethods.NCryptFreeBuffer(keyNamePtr);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // no reader, no card, or a provider that refuses to enumerate
+            }
+            finally
+            {
+                if (enumState != IntPtr.Zero)
+                    NativeMethods.NCryptFreeBuffer(enumState);
+                if (provider != IntPtr.Zero)
+                    NativeMethods.NCryptFreeObject(provider);
+            }
+
+            return containers;
         }
 
         /// <summary>
-        /// Reads CERT_KEY_PROV_INFO_PROP_ID, the provider recorded for this certificate
-        /// in the store. Returns null when the certificate has no key associated.
+        /// Reads CERT_KEY_PROV_INFO_PROP_ID, the provider and key container recorded for
+        /// this certificate in the store. Returns null when the certificate has no key
+        /// associated.
         /// </summary>
-        private static string GetKeyProviderName(X509Certificate2 certificate)
+        private static string GetKeyProviderInfo(X509Certificate2 certificate, out string containerName)
         {
+            containerName = null;
             const uint certKeyProvInfoPropId = 2;
 
             try
@@ -167,6 +233,7 @@ namespace mRemoteNG.Tools
                     NativeMethods.CRYPT_KEY_PROV_INFO info =
                         Marshal.PtrToStructure<NativeMethods.CRYPT_KEY_PROV_INFO>(buffer);
 
+                    containerName = info.pwszContainerName;
                     return info.pwszProvName;
                 }
                 finally
@@ -189,6 +256,30 @@ namespace mRemoteNG.Tools
                 uint dwPropId,
                 IntPtr pvData,
                 ref uint pcbData);
+
+            [DllImport("ncrypt.dll")]
+            public static extern int NCryptOpenStorageProvider(out IntPtr phProvider,
+                [MarshalAs(UnmanagedType.LPWStr)] string pszProviderName, uint dwFlags);
+
+            [DllImport("ncrypt.dll")]
+            public static extern int NCryptEnumKeys(IntPtr hProvider,
+                [MarshalAs(UnmanagedType.LPWStr)] string pszScope, out IntPtr ppKeyName,
+                ref IntPtr ppEnumState, uint dwFlags);
+
+            [DllImport("ncrypt.dll")]
+            public static extern int NCryptFreeBuffer(IntPtr pvInput);
+
+            [DllImport("ncrypt.dll")]
+            public static extern int NCryptFreeObject(IntPtr hObject);
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct NCryptKeyName
+            {
+                [MarshalAs(UnmanagedType.LPWStr)] public string pszName;
+                [MarshalAs(UnmanagedType.LPWStr)] public string pszAlgid;
+                public uint dwLegacyKeySpec;
+                public uint dwFlags;
+            }
 
             [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
             public struct CRYPT_KEY_PROV_INFO

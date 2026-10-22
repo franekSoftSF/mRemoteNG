@@ -15,6 +15,7 @@ namespace mRemoteNG.UI.Menu
         private ToolStripMenuItem _mMenToolsPortScan;
         private ToolStripMenuItem _mMenToolsUvncsc;
         private ToolStripMenuItem _mMenToolsBeyondTrustRefresh;
+        private ToolStripMenuItem _mMenToolsSmartcardConnection;
 
         public Form MainForm { get; set; }
         public ICredentialRepositoryList CredentialProviderCatalog { get; set; }
@@ -31,6 +32,7 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsExternalApps = new ToolStripMenuItem();
             _mMenToolsPortScan = new ToolStripMenuItem();
             _mMenToolsBeyondTrustRefresh = new ToolStripMenuItem();
+            _mMenToolsSmartcardConnection = new ToolStripMenuItem();
             //
             // mMenTools
             //
@@ -40,6 +42,7 @@ namespace mRemoteNG.UI.Menu
                 _mMenToolsUvncsc,
                 _mMenToolsExternalApps,
                 _mMenToolsPortScan,
+                _mMenToolsSmartcardConnection,
                 _mMenToolsBeyondTrustRefresh
             });
             Name = "mMenTools";
@@ -85,6 +88,13 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsBeyondTrustRefresh.Size = new System.Drawing.Size(184, 22);
             _mMenToolsBeyondTrustRefresh.Text = Language.BeyondTrustRefresh;
             _mMenToolsBeyondTrustRefresh.Click += mMenToolsBeyondTrustRefresh_Click;
+            //
+            // mMenToolsSmartcardConnection
+            //
+            _mMenToolsSmartcardConnection.Name = "mMenToolsSmartcardConnection";
+            _mMenToolsSmartcardConnection.Size = new System.Drawing.Size(184, 22);
+            _mMenToolsSmartcardConnection.Text = Language.SmartcardNewConnection;
+            _mMenToolsSmartcardConnection.Click += mMenToolsSmartcardConnection_Click;
         }
 
         public void ApplyLanguage()
@@ -94,6 +104,7 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsExternalApps.Text = Language.ExternalTool;
             _mMenToolsPortScan.Text = Language.PortScan;
             _mMenToolsBeyondTrustRefresh.Text = Language.BeyondTrustRefresh;
+            _mMenToolsSmartcardConnection.Text = Language.SmartcardNewConnection;
         }
 
         #region Tools
@@ -121,6 +132,11 @@ namespace mRemoteNG.UI.Menu
         private void mMenToolsBeyondTrustRefresh_Click(object sender, EventArgs e)
         {
             Config.BeyondTrust.BeyondTrustSyncManager.Instance.SyncAsync();
+        }
+
+        private void mMenToolsSmartcardConnection_Click(object sender, EventArgs e)
+        {
+            Forms.SmartcardConnectionCreator.CreateInteractive();
         }
 
         private void mMenToolsOptions_Click(object sender, EventArgs e)

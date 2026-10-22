@@ -2861,6 +2861,15 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="SmartcardNoCertificatesFound" xml:space="preserve">
     <value>No certificate with a key on a smart card was found. Insert the card and try again, or show all certificates.</value>
   </data>
+  <data name="SmartcardNewConnection" xml:space="preserve">
+    <value>New SSH connection from a smart card</value>
+  </data>
+  <data name="SmartcardShowStaleCertificates" xml:space="preserve">
+    <value>Also show certificates whose card is not inserted</value>
+  </data>
+  <data name="SmartcardNoCardCertificates" xml:space="preserve">
+    <value>No certificate on an inserted card was found. Insert the card, or tick the box to see every smart card certificate in the store.</value>
+  </data>
   <data name="SmartcardShowAllCertificates" xml:space="preserve">
     <value>Show all certificates with a private key</value>
   </data>

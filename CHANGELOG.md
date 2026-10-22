@@ -4,8 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [1.78.3]
 ### Added
+- "New SSH connection from a smart card" in the Tools menu: picks the certificate off the card, fills the login name from its UPN, turns on agent forwarding, and reports the prerequisites that otherwise all surface as the same "Server refused our key"
 - Smart card SSH authentication with PuTTY CAC: new connection properties "Smart card certificate" (CAPI/PKCS/FIDO identifier, with a picker that lists the certificates whose key is on a card) and "Forward SSH agent"; -x509off is passed automatically so OpenSSH accepts the key, and with agent forwarding the certificate is loaded into Pageant before the session opens
 - BeyondTrust Password Safe: connector for the BeyondInsight API v3 plus a tree root that mirrors every requestable managed account, with the password released per connection and checked back in on disconnect
+
+### Fixed
+- Installing over an existing version kept old assemblies, because the upgrade removed the previous product only after the new files were written and Windows Installer skips files whose version is not higher; helper assemblies are permanently 1.0.0.0, so they never got replaced and the application loaded stale code
+- The certificate list opened each certificate's private key to identify it, which made Windows ask to select a smart card and block for minutes when the store held certificates of cards that were not inserted; the provider is now read from certificate metadata, and entries whose key container is not on an inserted card are marked as stale
+- A certificate entered in the connection properties went blank again, because the new properties had no default settings and so kept inheriting the parent folder's empty value
+- A SHA-256 fingerprint pasted into the certificate field is translated to the SHA-1 thumbprint PuTTY CAC expects instead of silently matching nothing
 
 ### Updated
 - Rebuilt the MSI installer on WiX 5: SDK-style project that needs no installed toolset, file harvesting without heat, custom actions on WixToolset.Dtf, and a launch condition for the .NET 10 Desktop Runtime instead of the obsolete .NET Framework 4 and Windows 7 checks

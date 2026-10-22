@@ -8026,6 +8026,30 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string for SmartcardNewConnection.
+        /// </summary>
+        internal static string SmartcardNewConnection {
+            get {
+                return ResourceManager.GetString("SmartcardNewConnection", resourceCulture);
+            }
+        }
+                /// <summary>
+        ///   Looks up a localized string for SmartcardShowStaleCertificates.
+        /// </summary>
+        internal static string SmartcardShowStaleCertificates {
+            get {
+                return ResourceManager.GetString("SmartcardShowStaleCertificates", resourceCulture);
+            }
+        }
+                /// <summary>
+        ///   Looks up a localized string for SmartcardNoCardCertificates.
+        /// </summary>
+        internal static string SmartcardNoCardCertificates {
+            get {
+                return ResourceManager.GetString("SmartcardNoCardCertificates", resourceCulture);
+            }
+        }
+                /// <summary>
         ///   Looks up a localized string similar to Show all certificates with a private key.
         /// </summary>
         internal static string SmartcardShowAllCertificates {
