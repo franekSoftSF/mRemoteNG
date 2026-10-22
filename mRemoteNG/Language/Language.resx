@@ -2873,7 +2873,12 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="SmartcardShowAllCertificates" xml:space="preserve">
     <value>Show all certificates with a private key</value>
   </data>
-  <data name="PageantNotFound" xml:space="preserve">
+  <data name="PageantForeignInstance" xml:space="preserve">
+    <value>A Pageant from another installation is running. Only the Pageant that belongs to PuTTY CAC can hold a certificate, so agent forwarding will have nothing to offer. Close that Pageant and connect again.</value>
+  </data>
+  <data name="PageantNotReady" xml:space="preserve">
+    <value>Pageant did not come up in time, so the session may have been opened before the certificate reached the agent. Reconnect once Pageant is running.</value>
+  </data>  <data name="PageantNotFound" xml:space="preserve">
     <value>pageant.exe was not found next to the configured PuTTY, so the certificate could not be loaded into the agent. Agent forwarding will have nothing to forward.</value>
   </data>
   <data name="PageantCertificateLoaded" xml:space="preserve">

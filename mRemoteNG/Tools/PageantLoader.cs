@@ -6,8 +6,10 @@ using mRemoteNG.Resources.Language;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.IO;
 using System.Runtime.Versioning;
+using System.Threading;
 
 namespace mRemoteNG.Tools
 {
@@ -23,6 +25,8 @@ namespace mRemoteNG.Tools
     [SupportedOSPlatform("windows")]
     public static class PageantLoader
     {
+        private const int AgentReadyTimeoutMs = 5000;
+
         private const string PuttyRegistryKey = @"Software\SimonTatham\PuTTY";
 
         // identifiers already handed to Pageant in this process
@@ -51,15 +55,25 @@ namespace mRemoteNG.Tools
                 return;
             }
 
+            WarnIfForeignPageantIsRunning(pageantPath);
+
             try
             {
-                Process.Start(new ProcessStartInfo
+                Process process = Process.Start(new ProcessStartInfo
                 {
                     FileName = pageantPath,
                     Arguments = certificateIdentifier,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 });
+
+                // Agent forwarding is negotiated as the session opens, so the key has to
+                // be in the agent before PuTTY starts. Handing the key to a running
+                // Pageant makes this process exit; if it does not exit it has become the
+                // agent itself, and then its window has to be up before PuTTY looks for
+                // it.
+                if (process != null && !process.WaitForExit(AgentReadyTimeoutMs))
+                    WaitForPageantWindow(AgentReadyTimeoutMs);
 
                 Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
                     $"{Language.PageantCertificateLoaded}: {certificateIdentifier}", true);
@@ -71,6 +85,62 @@ namespace mRemoteNG.Tools
 
                 Runtime.MessageCollector.AddExceptionMessage(Language.PageantLoadFailed, ex);
             }
+        }
+
+        /// <summary>
+        /// A Pageant from a different installation cannot hold a certificate: stock
+        /// Pageant has no CAPI support, so handing it "CAPI:&lt;thumbprint&gt;" does
+        /// nothing and the forwarded agent stays empty. That failure is silent, which
+        /// is why it is called out here.
+        /// </summary>
+        private static void WarnIfForeignPageantIsRunning(string expectedPath)
+        {
+            foreach (Process process in Process.GetProcessesByName("pageant"))
+            {
+                try
+                {
+                    string runningPath = process.MainModule?.FileName ?? "";
+
+                    if (!string.IsNullOrEmpty(runningPath) &&
+                        !string.Equals(runningPath, expectedPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                            $"{Language.PageantForeignInstance}: {runningPath} (expected {expectedPath})");
+                    }
+                }
+                catch (Exception)
+                {
+                    // a process of another user, or one that exited meanwhile
+                }
+                finally
+                {
+                    process.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Waits until Pageant's IPC window exists, which is how PuTTY finds the agent.
+        /// </summary>
+        private static void WaitForPageantWindow(int timeoutMs)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            while (stopwatch.ElapsedMilliseconds < timeoutMs)
+            {
+                if (NativeMethods.FindWindow("Pageant", "Pageant") != IntPtr.Zero)
+                    return;
+
+                Thread.Sleep(100);
+            }
+
+            Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg, Language.PageantNotReady);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         }
 
         /// <summary>

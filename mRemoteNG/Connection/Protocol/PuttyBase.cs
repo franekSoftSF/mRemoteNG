@@ -575,6 +575,12 @@ namespace mRemoteNG.Connection.Protocol
                     PuttyProcess.StartInfo.Arguments = arguments.ToString();
                 }
 
+                // the command line is worth having in the log when a connection behaves
+                // differently than the same command run by hand; the password travels
+                // through a named pipe, so only its name appears here
+                Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
+                    $"{PuttyPath} {PuttyProcess.StartInfo.Arguments}", true);
+
                 PuttyProcess.EnableRaisingEvents = true;
                 PuttyProcess.Exited += ProcessExited;
 

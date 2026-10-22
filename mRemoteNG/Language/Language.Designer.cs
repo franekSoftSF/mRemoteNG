@@ -8059,6 +8059,22 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string for PageantForeignInstance.
+        /// </summary>
+        internal static string PageantForeignInstance {
+            get {
+                return ResourceManager.GetString("PageantForeignInstance", resourceCulture);
+            }
+        }
+                /// <summary>
+        ///   Looks up a localized string for PageantNotReady.
+        /// </summary>
+        internal static string PageantNotReady {
+            get {
+                return ResourceManager.GetString("PageantNotReady", resourceCulture);
+            }
+        }
+                /// <summary>
         ///   Looks up a localized string similar to pageant.exe was not found next to the configured PuTTY.
         /// </summary>
         internal static string PageantNotFound {
