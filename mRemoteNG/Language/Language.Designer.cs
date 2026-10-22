@@ -8111,6 +8111,14 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string for SmartcardUsingPuttyCac.
+        /// </summary>
+        internal static string SmartcardUsingPuttyCac {
+            get {
+                return ResourceManager.GetString("SmartcardUsingPuttyCac", resourceCulture);
+            }
+        }
+                /// <summary>
         ///   Looks up a localized string similar to the warning that PuTTY CAC is required.
         /// </summary>
         internal static string SmartcardRequiresPuttyCac {

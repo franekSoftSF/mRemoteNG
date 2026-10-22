@@ -138,8 +138,22 @@ namespace mRemoteNG.Connection.Protocol
 
             if (_isPuttyNg)
             {
-                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg, Language.SmartcardRequiresPuttyCac);
-                return;
+                // the bundled PuTTYNG cannot read certificates, so rather than connect
+                // without the one that was configured, look for a PuTTY CAC on this
+                // machine and use it for this connection
+                string? puttyCac = Tools.PuttyCacLocator.Find();
+
+                if (puttyCac == null)
+                {
+                    Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, Language.SmartcardRequiresPuttyCac);
+                    return;
+                }
+
+                PuttyProcess.StartInfo.FileName = puttyCac;
+                _isPuttyNg = false;
+
+                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                    $"{Language.SmartcardUsingPuttyCac}: {puttyCac}", true);
             }
 
             string normalized = Tools.SmartcardCertificateStore.NormalizeCapiIdentifier(certificate);

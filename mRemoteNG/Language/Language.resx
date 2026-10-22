@@ -2890,7 +2890,9 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="PageantAutoloadCertsEnabled" xml:space="preserve">
     <value>Pageant is set to autoload certificates, so it offers every certificate in the store one at a time. OpenSSH stops after MaxAuthTries, which can look like "Server refused our key" even though the card is fine. Turn it off with: reg add "HKCU\Software\SimonTatham\PuTTY" /v AutoloadCerts /t REG_DWORD /d 0 /f</value>
   </data>
-  <data name="SmartcardRequiresPuttyCac" xml:space="preserve">
-    <value>A smart card certificate is configured, but the SSH client is the bundled PuTTYNG, which has no certificate support. Set Options, Advanced, custom PuTTY path to PuTTY CAC.</value>
+  <data name="SmartcardUsingPuttyCac" xml:space="preserve">
+    <value>This connection has a smart card certificate, so PuTTY CAC is used instead of the bundled PuTTYNG</value>
+  </data>  <data name="SmartcardRequiresPuttyCac" xml:space="preserve">
+    <value>A smart card certificate is configured, but no PuTTY CAC was found on this machine; the bundled PuTTYNG cannot use certificates. Install PuTTY CAC, or set Options, Advanced, custom PuTTY path to it.</value>
   </data>
 </root>
