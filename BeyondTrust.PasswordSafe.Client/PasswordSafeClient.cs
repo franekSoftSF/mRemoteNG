@@ -114,6 +114,97 @@ public sealed class PasswordSafeClient : IDisposable
 
     #endregion
 
+    #region diagnostics
+
+    /// <summary>
+    /// Walks the calls the application depends on and reports each one, so a failing
+    /// setup can be told apart without reading a stack trace: wrong address, refused
+    /// key, missing permission or an account list the user cannot see.
+    ///
+    /// Never throws, and never reports a credential.
+    /// </summary>
+    public ConnectionTestResult TestConnection()
+    {
+        ConnectionTestResult result = new();
+
+        result.Steps.Add(RunStep("Sign in", $"POST {_options.ApiBase}/Auth/SignAppIn", () =>
+        {
+            SignIn();
+            return $"signed in as {_options.RunAsUser}";
+        }));
+
+        if (!result.Success)
+            return result;
+
+        result.Steps.Add(RunStep("Requestable accounts", "GET ManagedAccounts", () =>
+        {
+            List<ManagedAccount>? accounts = GetJson<List<ManagedAccount>>("ManagedAccounts?limit=1000&offset=0");
+            int count = accounts?.Count ?? 0;
+
+            return count == 0
+                ? "none returned; check that the accounts have \"Enable for API Access\" and that the Run As user has the Requestor role"
+                : $"{count} account(s) visible, for example {accounts![0].SystemName}\\{accounts[0].AccountName}";
+        }));
+
+        result.Steps.Add(RunStep("Managed systems", "GET ManagedSystems", () =>
+        {
+            ManagedSystemContainer? systems = GetJson<ManagedSystemContainer>("ManagedSystems?limit=1&offset=0");
+            return $"{systems?.TotalCount ?? 0} system(s); host names and ports come from here";
+        }));
+
+        result.Steps.Add(RunStep("Platforms", "GET Platforms", () =>
+        {
+            List<Platform>? platforms = GetJson<List<Platform>>("Platforms");
+            return $"{platforms?.Count ?? 0} platform(s); used to pick RDP or SSH";
+        }));
+
+        return result;
+    }
+
+    private static ConnectionTestStep RunStep(string name, string call, Func<string> action)
+    {
+        try
+        {
+            return new ConnectionTestStep(name, true, action());
+        }
+        catch (Exception ex)
+        {
+            return new ConnectionTestStep(name, false, $"{call} - {Explain(ex)}");
+        }
+    }
+
+    /// <summary>Turns the usual failures into something actionable.</summary>
+    private static string Explain(Exception exception)
+    {
+        switch (exception)
+        {
+            case PasswordSafeChallengeRequiredException challenge:
+                return $"two factor authentication required ({challenge.Prompt}); fill in the challenge field";
+
+            case PasswordSafeAccessDeniedException denied:
+                return $"access denied ({(int?)denied.StatusCode}); the API key, the Run As user or its roles do not allow this call";
+
+            case PasswordSafeException api:
+                return api.Message;
+
+            case TaskCanceledException:
+                return "timed out; the address may be wrong or blocked by a firewall";
+        }
+
+        for (Exception? inner = exception; inner != null; inner = inner.InnerException)
+        {
+            if (inner is System.Security.Authentication.AuthenticationException)
+                return "TLS failed; the server certificate is not trusted by this machine";
+
+            if (inner is System.Net.Sockets.SocketException socket)
+                return $"network error ({socket.SocketErrorCode}); check the address and that the host is reachable";
+        }
+
+        return exception.Message;
+    }
+
+    #endregion
+
     #region enumeration
 
     /// <summary>

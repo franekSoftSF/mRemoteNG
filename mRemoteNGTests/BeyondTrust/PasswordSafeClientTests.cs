@@ -282,6 +282,67 @@ namespace mRemoteNGTests.BeyondTrust
             Assert.Throws<PasswordSafeAccessDeniedException>(() => client.CreateRequest(3, 7, 30));
         }
 
+        [Test]
+        public void ConnectionTestReportsEveryCallOnASetupThatWorks()
+        {
+            StubHandler handler = new(request =>
+            {
+                string url = request.RequestUri!.AbsoluteUri;
+
+                if (url.EndsWith("/Auth/SignAppIn")) return Json("\"ok\"");
+                if (url.Contains("/ManagedAccounts?")) return Json("""[{"AccountId":7,"AccountName":"root","SystemId":3,"SystemName":"lx-client01"}]""");
+                if (url.Contains("/ManagedSystems?")) return Json("""{"TotalCount":4,"Data":[]}""");
+                if (url.EndsWith("/Platforms")) return Json("""[{"PlatformID":11,"Name":"Linux"}]""");
+
+                return Json("[]");
+            });
+
+            using PasswordSafeClient client = new(Options(), handler);
+            ConnectionTestResult result = client.TestConnection();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Success, Is.True, result.ToString());
+                Assert.That(result.Steps, Has.Count.EqualTo(4));
+                Assert.That(result.ToString(), Does.Contain("lx-client01\\root").And.Contain("4 system(s)"));
+            });
+        }
+
+        [Test]
+        public void ConnectionTestStopsAtSignInAndExplainsASecondFactor()
+        {
+            StubHandler handler = new(_ =>
+            {
+                HttpResponseMessage response = new(HttpStatusCode.Unauthorized) { Content = new StringContent("") };
+                response.Headers.TryAddWithoutValidation("WWW-Authenticate-2FA", "Enter your RADIUS code");
+                return response;
+            });
+
+            using PasswordSafeClient client = new(Options(), handler);
+            ConnectionTestResult result = client.TestConnection();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Success, Is.False);
+                Assert.That(result.Steps, Has.Count.EqualTo(1), "the later calls are pointless without a session");
+                Assert.That(result.ToString(), Does.Contain("two factor authentication required"));
+            });
+        }
+
+        [Test]
+        public void ConnectionTestPointsAtTheApiAccessFlagWhenNoAccountIsVisible()
+        {
+            StubHandler handler = new(request =>
+                request.RequestUri!.AbsoluteUri.Contains("/ManagedAccounts?")
+                    ? Json("[]")
+                    : Json("""{"TotalCount":0,"Data":[]}"""));
+
+            using PasswordSafeClient client = new(Options(), handler);
+            ConnectionTestResult result = client.TestConnection();
+
+            Assert.That(result.ToString(), Does.Contain("Enable for API Access"));
+        }
+
         [TestCase("3:7", 3, 7)]
         [TestCase(" 10 : 20 ", 10, 20)]
         public void IdentifiersRoundTrip(string id, int systemId, int accountId)

@@ -43,6 +43,8 @@ namespace ExternalConnectors.BT
             btnOK = new Button();
             btnCancel = new Button();
             lblHint = new Label();
+            btnTest = new Button();
+            tbTestResult = new TextBox();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             SuspendLayout();
@@ -190,6 +192,7 @@ namespace ExternalConnectors.BT
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 26F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 107F));
+            tableLayoutPanel2.Controls.Add(btnTest, 0, 0);
             tableLayoutPanel2.Controls.Add(btnOK, 1, 0);
             tableLayoutPanel2.Controls.Add(btnCancel, 3, 0);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
@@ -228,7 +231,7 @@ namespace ExternalConnectors.BT
             // lblHint
             //
             lblHint.AutoSize = true;
-            lblHint.Dock = DockStyle.Fill;
+            lblHint.Dock = DockStyle.Top;
             lblHint.Location = new Point(0, 212);
             lblHint.Margin = new Padding(5, 0, 5, 0);
             lblHint.Name = "lblHint";
@@ -239,13 +242,35 @@ namespace ExternalConnectors.BT
                 "The password is only needed if the API registration requires it.\r\n" +
                 "Only accounts with \"Enable for API Access\" can be listed.";
             //
+            // btnTest
+            //
+            btnTest.Anchor = AnchorStyles.Left;
+            btnTest.Location = new Point(12, 16);
+            btnTest.Margin = new Padding(5);
+            btnTest.Name = "btnTest";
+            btnTest.Size = new Size(140, 35);
+            btnTest.TabIndex = 7;
+            btnTest.Text = "Test connection";
+            btnTest.UseVisualStyleBackColor = true;
+            btnTest.Click += btnTest_Click;
+            //
+            // tbTestResult
+            //
+            tbTestResult.Dock = DockStyle.Fill;
+            tbTestResult.Multiline = true;
+            tbTestResult.Name = "tbTestResult";
+            tbTestResult.ReadOnly = true;
+            tbTestResult.ScrollBars = ScrollBars.Vertical;
+            tbTestResult.TabIndex = 8;
+            tbTestResult.WordWrap = true;            //
             // BTConnectionForm
             //
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(914, 367);
+            ClientSize = new Size(914, 560);
+            Controls.Add(tbTestResult);
             Controls.Add(lblHint);
             Controls.Add(tableLayoutPanel2);
             Controls.Add(tableLayoutPanel1);
@@ -273,6 +298,8 @@ namespace ExternalConnectors.BT
         private System.Windows.Forms.Label lblHint;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.TextBox tbTestResult;
 
         public System.Windows.Forms.TextBox tbServerURL;
         public System.Windows.Forms.TextBox tbAPIKey;
