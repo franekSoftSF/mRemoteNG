@@ -54,6 +54,7 @@ namespace mRemoteNG.UI.Forms
                 nameof(NotificationsPage),
                 nameof(CredentialsPage),
                 nameof(SqlServerPage),
+                nameof(BlinkyAccessPage),
                 nameof(UpdatesPage),
                 nameof(ThemePage),
                 nameof(SecurityPage),
@@ -231,6 +232,13 @@ namespace mRemoteNG.UI.Forms
                         if (Properties.OptionsDBsPage.Default.cbDBsPageInOptionMenu ||
                             Properties.OptionsRbac.Default.ActiveRole == "AdminRole")
                             page = new SqlServerPage { Dock = DockStyle.Fill };
+                        break;
+                    }
+                case "BlinkyAccessPage":
+                    {
+                        if (Properties.OptionsBlinkyAccessPage.Default.cbBlinkyAccessPageInOptionMenu ||
+                            Properties.OptionsRbac.Default.ActiveRole == "AdminRole")
+                            page = new BlinkyAccessPage { Dock = DockStyle.Fill };
                         break;
                     }
                 case "UpdatesPage":

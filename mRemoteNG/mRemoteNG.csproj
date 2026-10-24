@@ -171,6 +171,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>OptionsAppearancePage.settings</DependentUpon>
     </Compile>
+    <Compile Update="Properties\OptionsBlinkyAccessPage.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OptionsBlinkyAccessPage.settings</DependentUpon>
+    </Compile>
     <Compile Update="Properties\OptionsConnectionsPage.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -416,6 +421,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>OptionsAppearancePage.Designer.cs</LastGenOutput>
     </None>
+    <None Update="Properties\OptionsBlinkyAccessPage.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>OptionsBlinkyAccessPage.Designer.cs</LastGenOutput>
+    </None>
     <None Update="Properties\OptionsConnectionsPage.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>OptionsConnectionsPage.Designer.cs</LastGenOutput>
@@ -527,6 +536,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BeyondTrust.PasswordSafe.Client\BeyondTrust.PasswordSafe.Client.csproj" />
+    <ProjectReference Include="..\BlinkyAccess.Client\BlinkyAccess.Client.csproj" />
     <ProjectReference Include="..\ExternalConnectors\ExternalConnectors.csproj" />
     <ProjectReference Include="..\ObjectListView\ObjectListView.NetCore.csproj" />
   </ItemGroup>

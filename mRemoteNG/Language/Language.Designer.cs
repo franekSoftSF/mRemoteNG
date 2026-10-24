@@ -8126,5 +8126,176 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("SmartcardRequiresPuttyCac", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blinky Access.
+        /// </summary>
+        internal static string BlinkyAccessRootName {
+            get {
+                return ResourceManager.GetString("BlinkyAccessRootName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the hint shown on the managed Blinky Access branch.
+        /// </summary>
+        internal static string BlinkyAccessBranchHint {
+            get {
+                return ResourceManager.GetString("BlinkyAccessBranchHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronize with Blinky Access.
+        /// </summary>
+        internal static string BlinkyAccessSynchronize {
+            get {
+                return ResourceManager.GetString("BlinkyAccessSynchronize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blinky Access is not set up.
+        /// </summary>
+        internal static string BlinkyAccessNotConfigured {
+            get {
+                return ResourceManager.GetString("BlinkyAccessNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the portal rejected the access token.
+        /// </summary>
+        internal static string BlinkyAccessTokenRejected {
+            get {
+                return ResourceManager.GetString("BlinkyAccessTokenRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the portal is rate limiting this client.
+        /// </summary>
+        internal static string BlinkyAccessRateLimited {
+            get {
+                return ResourceManager.GetString("BlinkyAccessRateLimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the portal is rate limiting this client, with the wait it asked for.
+        /// </summary>
+        internal static string BlinkyAccessRateLimitedRetryAfter {
+            get {
+                return ResourceManager.GetString("BlinkyAccessRateLimitedRetryAfter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the portal answered in an unsupported format.
+        /// </summary>
+        internal static string BlinkyAccessUnsupportedFormat {
+            get {
+                return ResourceManager.GetString("BlinkyAccessUnsupportedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not read connections from Blinky Access.
+        /// </summary>
+        internal static string BlinkyAccessSyncFailed {
+            get {
+                return ResourceManager.GetString("BlinkyAccessSyncFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the counts of one Blinky Access synchronisation.
+        /// </summary>
+        internal static string BlinkyAccessSyncResult {
+            get {
+                return ResourceManager.GetString("BlinkyAccessSyncResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to no connections file is loaded.
+        /// </summary>
+        internal static string BlinkyAccessNoConnectionsLoaded {
+            get {
+                return ResourceManager.GetString("BlinkyAccessNoConnectionsLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to what the Blinky Access page does.
+        /// </summary>
+        internal static string BlinkyAccessExplanation {
+            get {
+                return ResourceManager.GetString("BlinkyAccessExplanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Portal address.
+        /// </summary>
+        internal static string BlinkyAccessPortalAddress {
+            get {
+                return ResourceManager.GetString("BlinkyAccessPortalAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access token.
+        /// </summary>
+        internal static string BlinkyAccessAccessToken {
+            get {
+                return ResourceManager.GetString("BlinkyAccessAccessToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to how the token field behaves.
+        /// </summary>
+        internal static string BlinkyAccessTokenHint {
+            get {
+                return ResourceManager.GetString("BlinkyAccessTokenHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronize at startup.
+        /// </summary>
+        internal static string BlinkyAccessSyncOnStartup {
+            get {
+                return ResourceManager.GetString("BlinkyAccessSyncOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test.
+        /// </summary>
+        internal static string BlinkyAccessTestConnection {
+            get {
+                return ResourceManager.GetString("BlinkyAccessTestConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Testing the portal...
+        /// </summary>
+        internal static string BlinkyAccessTestRunning {
+            get {
+                return ResourceManager.GetString("BlinkyAccessTestRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to the portal address must start with https://.
+        /// </summary>
+        internal static string BlinkyAccessAddressMustBeHttps {
+            get {
+                return ResourceManager.GetString("BlinkyAccessAddressMustBeHttps", resourceCulture);
+            }
+        }
     }
 }

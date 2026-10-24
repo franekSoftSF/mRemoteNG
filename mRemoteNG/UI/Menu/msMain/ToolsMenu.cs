@@ -15,6 +15,7 @@ namespace mRemoteNG.UI.Menu
         private ToolStripMenuItem _mMenToolsPortScan;
         private ToolStripMenuItem _mMenToolsUvncsc;
         private ToolStripMenuItem _mMenToolsBeyondTrustRefresh;
+        private ToolStripMenuItem _mMenToolsBlinkyAccessSync;
         private ToolStripMenuItem _mMenToolsSmartcardConnection;
 
         public Form MainForm { get; set; }
@@ -32,6 +33,7 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsExternalApps = new ToolStripMenuItem();
             _mMenToolsPortScan = new ToolStripMenuItem();
             _mMenToolsBeyondTrustRefresh = new ToolStripMenuItem();
+            _mMenToolsBlinkyAccessSync = new ToolStripMenuItem();
             _mMenToolsSmartcardConnection = new ToolStripMenuItem();
             //
             // mMenTools
@@ -43,7 +45,8 @@ namespace mRemoteNG.UI.Menu
                 _mMenToolsExternalApps,
                 _mMenToolsPortScan,
                 _mMenToolsSmartcardConnection,
-                _mMenToolsBeyondTrustRefresh
+                _mMenToolsBeyondTrustRefresh,
+                _mMenToolsBlinkyAccessSync
             });
             Name = "mMenTools";
             Size = new System.Drawing.Size(48, 20);
@@ -89,6 +92,14 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsBeyondTrustRefresh.Text = Language.BeyondTrustRefresh;
             _mMenToolsBeyondTrustRefresh.Click += mMenToolsBeyondTrustRefresh_Click;
             //
+            // mMenToolsBlinkyAccessSync
+            //
+            _mMenToolsBlinkyAccessSync.Image = Properties.Resources.SyncArrow_16x;
+            _mMenToolsBlinkyAccessSync.Name = "mMenToolsBlinkyAccessSync";
+            _mMenToolsBlinkyAccessSync.Size = new System.Drawing.Size(184, 22);
+            _mMenToolsBlinkyAccessSync.Text = Language.BlinkyAccessSynchronize;
+            _mMenToolsBlinkyAccessSync.Click += mMenToolsBlinkyAccessSync_Click;
+            //
             // mMenToolsSmartcardConnection
             //
             _mMenToolsSmartcardConnection.Name = "mMenToolsSmartcardConnection";
@@ -105,6 +116,7 @@ namespace mRemoteNG.UI.Menu
             _mMenToolsPortScan.Text = Language.PortScan;
             _mMenToolsBeyondTrustRefresh.Text = Language.BeyondTrustRefresh;
             _mMenToolsSmartcardConnection.Text = Language.SmartcardNewConnection;
+            _mMenToolsBlinkyAccessSync.Text = Language.BlinkyAccessSynchronize;
         }
 
         #region Tools
@@ -132,6 +144,11 @@ namespace mRemoteNG.UI.Menu
         private void mMenToolsBeyondTrustRefresh_Click(object sender, EventArgs e)
         {
             Config.BeyondTrust.BeyondTrustSyncManager.Instance.SyncAsync();
+        }
+
+        private void mMenToolsBlinkyAccessSync_Click(object sender, EventArgs e)
+        {
+            Config.BlinkyAccess.BlinkyAccessSyncManager.Instance.SyncAsync();
         }
 
         private void mMenToolsSmartcardConnection_Click(object sender, EventArgs e)

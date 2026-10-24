@@ -245,6 +245,9 @@ namespace mRemoteNG.UI.Forms
             CredsAndConsSetup credsAndConsSetup = new();
             credsAndConsSetup.LoadCredsAndCons();
 
+            // needs the connections in place: the mirrored branch lives in the tree
+            Config.BlinkyAccess.BlinkyAccessSyncManager.Instance.SyncOnStartupIfEnabled();
+
             // Initialize panel binding for Connections and Config panels
             UI.Panels.PanelBinder.Instance.Initialize();
 

@@ -2895,4 +2895,61 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   </data>  <data name="SmartcardRequiresPuttyCac" xml:space="preserve">
     <value>A smart card certificate is configured, but no PuTTY CAC was found on this machine; the bundled PuTTYNG cannot use certificates. Install PuTTY CAC, or set Options, Advanced, custom PuTTY path to it.</value>
   </data>
+  <data name="BlinkyAccessRootName" xml:space="preserve">
+    <value>Blinky Access</value>
+  </data>
+  <data name="BlinkyAccessBranchHint" xml:space="preserve">
+    <value>Managed by Blinky Access. Every synchronisation rewrites the connections in this folder from the portal, so anything changed here by hand is not kept, and a connection the portal no longer offers is deleted.</value>
+  </data>
+  <data name="BlinkyAccessSynchronize" xml:space="preserve">
+    <value>Synchronize with Blinky Access</value>
+  </data>
+  <data name="BlinkyAccessNotConfigured" xml:space="preserve">
+    <value>Blinky Access is not set up. Enter the portal address and an access token under Options, Blinky Access.</value>
+  </data>
+  <data name="BlinkyAccessTokenRejected" xml:space="preserve">
+    <value>The Blinky Access portal rejected the access token: it is wrong, expired or revoked. Issue a new token in the portal and enter it under Options, Blinky Access. The connections were left unchanged.</value>
+  </data>
+  <data name="BlinkyAccessRateLimited" xml:space="preserve">
+    <value>The Blinky Access portal is rate limiting this client. Try again later; the connections were left unchanged.</value>
+  </data>
+  <data name="BlinkyAccessRateLimitedRetryAfter" xml:space="preserve">
+    <value>The Blinky Access portal is rate limiting this client. Try again in {0} second(s); the connections were left unchanged.</value>
+  </data>
+  <data name="BlinkyAccessUnsupportedFormat" xml:space="preserve">
+    <value>The Blinky Access portal answered in the unsupported format '{0}'. Update mRemoteNG; the connections were left unchanged.</value>
+  </data>
+  <data name="BlinkyAccessSyncFailed" xml:space="preserve">
+    <value>Could not read connections from Blinky Access</value>
+  </data>
+  <data name="BlinkyAccessSyncResult" xml:space="preserve">
+    <value>Blinky Access: {0} added, {1} updated, {2} removed</value>
+  </data>
+  <data name="BlinkyAccessNoConnectionsLoaded" xml:space="preserve">
+    <value>No connections file is loaded, so there is nothing for Blinky Access to synchronize into.</value>
+  </data>
+  <data name="BlinkyAccessExplanation" xml:space="preserve">
+    <value>Connections you may open are read from a Blinky Access portal over its API and mirrored into a folder of their own in the connection tree.</value>
+  </data>
+  <data name="BlinkyAccessPortalAddress" xml:space="preserve">
+    <value>Portal address</value>
+  </data>
+  <data name="BlinkyAccessAccessToken" xml:space="preserve">
+    <value>Access token</value>
+  </data>
+  <data name="BlinkyAccessTokenHint" xml:space="preserve">
+    <value>Only the beginning of the stored token is shown. Paste a new token to replace it, or clear the field to forget it. The token is stored encrypted for your Windows account only.</value>
+  </data>
+  <data name="BlinkyAccessSyncOnStartup" xml:space="preserve">
+    <value>Synchronize at startup</value>
+  </data>
+  <data name="BlinkyAccessTestConnection" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="BlinkyAccessTestRunning" xml:space="preserve">
+    <value>Testing the portal...</value>
+  </data>
+  <data name="BlinkyAccessAddressMustBeHttps" xml:space="preserve">
+    <value>The portal address must start with https://.</value>
+  </data>
 </root>

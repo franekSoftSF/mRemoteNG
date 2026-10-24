@@ -53,6 +53,7 @@ namespace mRemoteNG.Config.Settings
                 Properties.OptionsAdvancedPage.Default.Save();
                 Properties.OptionsAppearancePage.Default.Save();
                 Properties.OptionsBackupPage.Default.Save();
+                Properties.OptionsBlinkyAccessPage.Default.Save();
                 Properties.OptionsConnectionsPage.Default.Save();
                 Properties.OptionsCredentialsPage.Default.Save();
                 Properties.OptionsDBsPage.Default.Save();
