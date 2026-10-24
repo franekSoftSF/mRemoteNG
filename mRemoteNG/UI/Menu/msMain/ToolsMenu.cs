@@ -148,7 +148,7 @@ namespace mRemoteNG.UI.Menu
 
         private void mMenToolsBlinkyAccessSync_Click(object sender, EventArgs e)
         {
-            Config.BlinkyAccess.BlinkyAccessSyncManager.Instance.SyncAsync();
+            Config.BlinkyAccess.BlinkyAccessSyncManager.Instance.SyncAsync(interactive: true);
         }
 
         private void mMenToolsSmartcardConnection_Click(object sender, EventArgs e)

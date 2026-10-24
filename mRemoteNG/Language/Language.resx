@@ -2952,4 +2952,13 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="BlinkyAccessAddressMustBeHttps" xml:space="preserve">
     <value>The portal address must start with https://.</value>
   </data>
+  <data name="BlinkyAccessAlreadyRunning" xml:space="preserve">
+    <value>A synchronization with Blinky Access is already running.</value>
+  </data>
+  <data name="BlinkyAccessNotConfiguredOpenOptions" xml:space="preserve">
+    <value>Blinky Access is not set up yet. Open Options to enter the portal address and an access token?</value>
+  </data>
+  <data name="BlinkyAccessSyncFinished" xml:space="preserve">
+    <value>Synchronization with Blinky Access finished: {0} added, {1} updated, {2} removed.</value>
+  </data>
 </root>

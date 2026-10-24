@@ -8297,5 +8297,32 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("BlinkyAccessAddressMustBeHttps", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to a synchronization is already running.
+        /// </summary>
+        internal static string BlinkyAccessAlreadyRunning {
+            get {
+                return ResourceManager.GetString("BlinkyAccessAlreadyRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blinky Access is not set up yet; offers to open Options.
+        /// </summary>
+        internal static string BlinkyAccessNotConfiguredOpenOptions {
+            get {
+                return ResourceManager.GetString("BlinkyAccessNotConfiguredOpenOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to what one synchronisation did, for the dialog.
+        /// </summary>
+        internal static string BlinkyAccessSyncFinished {
+            get {
+                return ResourceManager.GetString("BlinkyAccessSyncFinished", resourceCulture);
+            }
+        }
     }
 }

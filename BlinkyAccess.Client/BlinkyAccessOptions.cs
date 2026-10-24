@@ -27,12 +27,29 @@ public sealed class BlinkyAccessOptions
     /// <summary>The prefix every Blinky Access personal access token carries.</summary>
     public const string TokenPrefix = "bla_pat_";
 
+    /// <summary>Path of the connections endpoint below the portal address.</summary>
+    public const string ConnectionsPath = "/api/user/v1/connections";
+
     /// <summary>
     /// The connections endpoint of <see cref="PortalUrl"/>. A missing scheme is read as
     /// https; anything other than https is refused, because the token travels in a
     /// header and must not cross a plain text connection.
+    ///
+    /// The endpoint is what the documentation shows, so it is what people paste: an
+    /// address that already ends in it is taken as it is rather than having a second
+    /// copy of the path appended.
     /// </summary>
-    public Uri ConnectionsUrl => new(NormalizedPortalUrl() + "/api/user/v1/connections");
+    public Uri ConnectionsUrl
+    {
+        get
+        {
+            string url = NormalizedPortalUrl();
+
+            return new Uri(url.EndsWith(ConnectionsPath, StringComparison.OrdinalIgnoreCase)
+                ? url
+                : url + ConnectionsPath);
+        }
+    }
 
     /// <summary>
     /// Whether an address can be used at all, without building a request. Reported by

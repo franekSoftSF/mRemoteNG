@@ -96,6 +96,22 @@ namespace mRemoteNGTests.BlinkyAccess
         }
 
         [Test]
+        public void TheEndpointIsNotAppendedTwiceToAnAddressThatAlreadyCarriesIt()
+        {
+            // the documentation shows the endpoint, so that is what gets pasted into
+            // the address field; appending the path again produced a 404
+            Assert.Multiple(() =>
+            {
+                Assert.That(new BlinkyAccessOptions { PortalUrl = "https://portal.example.com/api/user/v1/connections" }.ConnectionsUrl.AbsoluteUri,
+                    Is.EqualTo("https://portal.example.com/api/user/v1/connections"));
+                Assert.That(new BlinkyAccessOptions { PortalUrl = "https://portal.example.com/api/user/v1/connections/" }.ConnectionsUrl.AbsoluteUri,
+                    Is.EqualTo("https://portal.example.com/api/user/v1/connections"));
+                Assert.That(new BlinkyAccessOptions { PortalUrl = "portal.example.com/API/USER/V1/CONNECTIONS" }.ConnectionsUrl.AbsoluteUri,
+                    Is.EqualTo("https://portal.example.com/API/USER/V1/CONNECTIONS"));
+            });
+        }
+
+        [Test]
         public void APortalAddressThatIsNotHttpsIsRefusedBeforeAnythingIsSent()
         {
             Assert.Multiple(() =>

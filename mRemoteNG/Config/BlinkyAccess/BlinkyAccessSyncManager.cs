@@ -5,12 +5,14 @@ using mRemoteNG.Messages;
 using mRemoteNG.Resources.Language;
 using mRemoteNG.Tree;
 using mRemoteNG.Tree.Root;
+using mRemoteNG.UI;
 using mRemoteNG.UI.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace mRemoteNG.Config.BlinkyAccess
 {
@@ -36,9 +38,14 @@ namespace mRemoteNG.Config.BlinkyAccess
         }
 
         /// <summary>Runs <see cref="Sync"/> on a background thread.</summary>
-        public void SyncAsync()
+        /// <param name="interactive">
+        /// True when the user asked for this run from the menu, in which case the
+        /// outcome is also put in front of them. A run nobody asked for, at startup,
+        /// leaves it at the notification panel.
+        /// </param>
+        public void SyncAsync(bool interactive = false)
         {
-            Thread thread = new(() => Sync()) { IsBackground = true, Name = "BlinkyAccessSync" };
+            Thread thread = new(() => Sync(interactive)) { IsBackground = true, Name = "BlinkyAccessSync" };
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
         }
@@ -60,16 +67,19 @@ namespace mRemoteNG.Config.BlinkyAccess
         /// Reads the portal and brings the managed branch in line with it. Blocks, and
         /// may be called from any thread. Never throws.
         /// </summary>
-        public BlinkyAccessSyncSummary Sync()
+        public BlinkyAccessSyncSummary Sync(bool interactive = false)
         {
             if (Interlocked.Exchange(ref _syncRunning, 1) == 1)
+            {
+                Report(MessageClass.InformationMsg, Language.BlinkyAccessAlreadyRunning, interactive, MessageBoxIcon.Information);
                 return BlinkyAccessSyncSummary.Empty;
+            }
 
             try
             {
                 if (!BlinkyAccessSettings.IsConfigured)
                 {
-                    Report(MessageClass.WarningMsg, Language.BlinkyAccessNotConfigured);
+                    ReportNotConfigured(interactive);
                     return BlinkyAccessSyncSummary.Empty;
                 }
 
@@ -78,30 +88,40 @@ namespace mRemoteNG.Config.BlinkyAccess
                 using (BlinkyAccessClient client = new(BlinkyAccessSettings.BuildClientOptions()))
                     connections = client.GetConnections();
 
-                return Apply(connections);
+                BlinkyAccessSyncSummary? summary = Apply(connections, interactive);
+
+                if (summary != null && interactive)
+                {
+                    ShowDialog(string.Format(Language.BlinkyAccessSyncFinished,
+                        summary.Added, summary.Updated, summary.Removed), MessageBoxIcon.Information);
+                }
+
+                return summary ?? BlinkyAccessSyncSummary.Empty;
             }
             catch (BlinkyAccessUnauthorizedException)
             {
                 // deliberately not retried: only a new token can help
-                Report(MessageClass.ErrorMsg, Language.BlinkyAccessTokenRejected);
+                Report(MessageClass.ErrorMsg, Language.BlinkyAccessTokenRejected, interactive, MessageBoxIcon.Error);
             }
             catch (BlinkyAccessThrottledException ex)
             {
                 Report(MessageClass.WarningMsg, ex.RetryAfter.HasValue
                     ? string.Format(Language.BlinkyAccessRateLimitedRetryAfter, (int)ex.RetryAfter.Value.TotalSeconds)
-                    : Language.BlinkyAccessRateLimited);
+                    : Language.BlinkyAccessRateLimited, interactive, MessageBoxIcon.Warning);
             }
             catch (BlinkyAccessUnsupportedFormatException ex)
             {
-                Report(MessageClass.ErrorMsg, string.Format(Language.BlinkyAccessUnsupportedFormat, ex.ReportedFormat));
+                Report(MessageClass.ErrorMsg, string.Format(Language.BlinkyAccessUnsupportedFormat, ex.ReportedFormat),
+                    interactive, MessageBoxIcon.Error);
             }
             catch (BlinkyAccessConfigurationException)
             {
-                Report(MessageClass.WarningMsg, Language.BlinkyAccessNotConfigured);
+                ReportNotConfigured(interactive);
             }
             catch (Exception ex)
             {
-                Report(MessageClass.ErrorMsg, $"{Language.BlinkyAccessSyncFailed}: {BlinkyAccessClient.Explain(ex)}");
+                Report(MessageClass.ErrorMsg, $"{Language.BlinkyAccessSyncFailed}: {BlinkyAccessClient.Explain(ex)}",
+                    interactive, MessageBoxIcon.Error);
             }
             finally
             {
@@ -111,9 +131,13 @@ namespace mRemoteNG.Config.BlinkyAccess
             return BlinkyAccessSyncSummary.Empty;
         }
 
-        private BlinkyAccessSyncSummary Apply(IReadOnlyList<BlinkyAccessConnection> connections)
+        /// <summary>
+        /// Applies the connections to the managed branch. Null when there was no tree
+        /// to apply them to, which is not the same as a run that changed nothing.
+        /// </summary>
+        private BlinkyAccessSyncSummary? Apply(IReadOnlyList<BlinkyAccessConnection> connections, bool interactive)
         {
-            BlinkyAccessSyncSummary summary = BlinkyAccessSyncSummary.Empty;
+            BlinkyAccessSyncSummary? summary = null;
 
             RunOnUiThread(() =>
             {
@@ -121,7 +145,7 @@ namespace mRemoteNG.Config.BlinkyAccess
 
                 if (root == null)
                 {
-                    Report(MessageClass.WarningMsg, Language.BlinkyAccessNoConnectionsLoaded);
+                    Report(MessageClass.WarningMsg, Language.BlinkyAccessNoConnectionsLoaded, interactive, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -172,9 +196,48 @@ namespace mRemoteNG.Config.BlinkyAccess
                 action();
         }
 
-        private static void Report(MessageClass messageClass, string message)
+        /// <summary>
+        /// Puts an outcome where the user will find it: always in the notification
+        /// panel, and in front of them as well when they asked for this run, since a
+        /// menu item that answers only into a panel they may have hidden reads as a
+        /// menu item that does nothing.
+        /// </summary>
+        private static void Report(MessageClass messageClass, string message, bool interactive, MessageBoxIcon icon)
         {
             Runtime.MessageCollector?.AddMessage(messageClass, message);
+
+            if (interactive)
+                ShowDialog(message, icon);
+        }
+
+        /// <summary>
+        /// Nothing can be read without an address and a token, so an interactive run
+        /// offers the page that asks for them instead of only naming it.
+        /// </summary>
+        private static void ReportNotConfigured(bool interactive)
+        {
+            Runtime.MessageCollector?.AddMessage(MessageClass.WarningMsg, Language.BlinkyAccessNotConfigured);
+
+            if (!interactive)
+                return;
+
+            RunOnUiThread(() =>
+            {
+                DialogResult answer = MessageBox.Show(FrmMain.Default, Language.BlinkyAccessNotConfiguredOpenOptions,
+                    Language.BlinkyAccessRootName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (answer != DialogResult.Yes)
+                    return;
+
+                AppWindows.Show(WindowType.Options);
+                AppWindows.OptionsFormWindow?.SetActivatedPage(Language.BlinkyAccessRootName);
+            });
+        }
+
+        private static void ShowDialog(string message, MessageBoxIcon icon)
+        {
+            RunOnUiThread(() => MessageBox.Show(FrmMain.Default, message, Language.BlinkyAccessRootName,
+                MessageBoxButtons.OK, icon));
         }
     }
 }
