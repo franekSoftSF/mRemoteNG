@@ -34,10 +34,16 @@ namespace mRemoteNG.Tools
 
         /// <summary>
         /// Makes sure Pageant holds <paramref name="certificateIdentifier"/>, using the
-        /// pageant.exe that sits next to the configured PuTTY. Failures are reported and
-        /// swallowed: the connection itself may still work without the agent.
+        /// pageant.exe that sits next to the PuTTY this connection runs. Failures are
+        /// reported and swallowed: the connection itself may still work without the agent.
         /// </summary>
-        public static void EnsureCertificateLoaded(string certificateIdentifier)
+        /// <param name="puttyExecutable">
+        /// The client this connection will actually run. A connection with a certificate
+        /// is switched away from the bundled PuTTYNG to a PuTTY CAC found elsewhere, and
+        /// its Pageant is the one that can hold a certificate — the configured path
+        /// still points at PuTTYNG, which has no Pageant beside it at all.
+        /// </param>
+        public static void EnsureCertificateLoaded(string certificateIdentifier, string puttyExecutable)
         {
             if (string.IsNullOrEmpty(certificateIdentifier))
                 return;
@@ -48,7 +54,7 @@ namespace mRemoteNG.Tools
                     return;
             }
 
-            string pageantPath = GetPageantPath();
+            string pageantPath = GetPageantPath(puttyExecutable);
             if (pageantPath == null)
             {
                 Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg, Language.PageantNotFound);
@@ -166,12 +172,13 @@ namespace mRemoteNG.Tools
         }
 
         /// <summary>
-        /// pageant.exe from the same installation as the configured PuTTY, so a custom
-        /// path pointing at PuTTY CAC also gives us PuTTY CAC's Pageant.
+        /// pageant.exe from the same installation as the PuTTY being run, so the client
+        /// picked for a certificate also gives us that installation's Pageant. Only when
+        /// no client was named does the configured path stand in.
         /// </summary>
-        private static string GetPageantPath()
+        internal static string GetPageantPath(string puttyExecutable)
         {
-            string puttyPath = PuttyBase.PuttyPath;
+            string puttyPath = string.IsNullOrEmpty(puttyExecutable) ? PuttyBase.PuttyPath : puttyExecutable;
             if (string.IsNullOrEmpty(puttyPath))
                 return null;
 

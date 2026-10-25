@@ -169,7 +169,7 @@ namespace mRemoteNG.Connection.Protocol
             if (InterfaceControl.Info?.SshAgentForwarding == true)
             {
                 Tools.PageantLoader.WarnIfAutoloadCertsEnabled();
-                Tools.PageantLoader.EnsureCertificateLoaded(normalized);
+                Tools.PageantLoader.EnsureCertificateLoaded(normalized, PuttyProcess.StartInfo.FileName);
             }
         }
 
