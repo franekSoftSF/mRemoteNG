@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Versioning;
-using System.Windows.Forms;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Repository;
+using mRemoteNG.App.Info;
 
 namespace mRemoteNG.App
 {
@@ -13,6 +13,10 @@ namespace mRemoteNG.App
     public class Logger
     {
         public static readonly Logger Instance = new();
+
+        // Resolved against the executable's folder; the working directory is not guaranteed to be it.
+        // A property, not a static field: field initializers run after Instance's and would still be null here.
+        private static string ConfigFilePath => Path.Combine(AppContext.BaseDirectory, "log4net.config");
 
         public ILog Log { get; private set; } = null!; // initialized via SetLogPath() called from the constructor
 
@@ -25,7 +29,7 @@ namespace mRemoteNG.App
 
         private void Initialize()
         {
-            XmlConfigurator.Configure(LogManager.CreateRepository("mRemoteNG"));
+            LogManager.CreateRepository("mRemoteNG");
 
             if (string.IsNullOrEmpty(Properties.OptionsNotificationsPage.Default.LogFilePath))
             {
@@ -39,7 +43,10 @@ namespace mRemoteNG.App
         {
             ILoggerRepository repository = LogManager.GetRepository("mRemoteNG");
 
-            XmlConfigurator.Configure(repository, new FileInfo("log4net.config"));
+            // Read while the configuration is parsed, so the appender never opens a file anywhere else first.
+            GlobalContext.Properties["LogFilePath"] = path;
+
+            XmlConfigurator.Configure(repository, new FileInfo(ConfigFilePath));
 
             IAppender[] appenders = repository.GetAppenders();
 
@@ -56,26 +63,9 @@ namespace mRemoteNG.App
 
         private static string BuildLogFilePath()
         {
-            string logFilePath = Runtime.IsPortableEdition ? GetLogPathPortableEdition() : GetLogPathNormalEdition();
-
-            string? logFileName = Path.ChangeExtension(Application.ProductName, ".log");
-
-            if (logFileName == null) return "mRemoteNG.log";
-
-            string logFile = Path.Combine(logFilePath, logFileName);
-
-            return logFile;
+            // Keep the log with the rest of the per-user settings: beside confCons.xml, or beside the
+            // executable in the portable edition.
+            return Path.Combine(SettingsFileInfo.SettingsPath, "mRemoteNG.log");
         }
-
-        private static string GetLogPathNormalEdition()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Application.ProductName ?? "mRemoteNG");
-        }
-
-        private static string GetLogPathPortableEdition()
-        {
-            return Application.StartupPath;
-        }
-
     }
 }
