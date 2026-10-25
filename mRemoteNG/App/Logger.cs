@@ -24,7 +24,17 @@ namespace mRemoteNG.App
 
         private Logger()
         {
-            Initialize();
+            try
+            {
+                Initialize();
+            }
+            catch (Exception ex)
+            {
+                // Instance is a static field, so anything thrown here surfaces as a
+                // TypeInitializationException and the application never starts, with the real cause
+                // hidden. Running without a log file is the lesser failure.
+                EnsureLog().Error("Could not initialize logging; continuing without a log file.", ex);
+            }
         }
 
         private void Initialize()
@@ -41,25 +51,37 @@ namespace mRemoteNG.App
 
         public void SetLogPath(string path)
         {
-            ILoggerRepository repository = LogManager.GetRepository("mRemoteNG");
-
-            // Read while the configuration is parsed, so the appender never opens a file anywhere else first.
-            GlobalContext.Properties["LogFilePath"] = path;
-
-            XmlConfigurator.Configure(repository, new FileInfo(ConfigFilePath));
-
-            IAppender[] appenders = repository.GetAppenders();
-
-            foreach (IAppender appender in appenders)
+            try
             {
-                RollingFileAppender fileAppender = (RollingFileAppender)appender;
-                if (fileAppender is not { Name: "LogFileAppender" }) continue;
-                fileAppender.File = path;
-                fileAppender.ActivateOptions();
-            }
+                ILoggerRepository repository = LogManager.GetRepository("mRemoteNG");
 
-            Log = LogManager.GetLogger("mRemoteNG", "Logger");
+                // Read while the configuration is parsed, so the appender never opens a file anywhere else first.
+                GlobalContext.Properties["LogFilePath"] = path;
+
+                XmlConfigurator.Configure(repository, new FileInfo(ConfigFilePath));
+
+                IAppender[] appenders = repository.GetAppenders();
+
+                foreach (IAppender appender in appenders)
+                {
+                    if (appender is not RollingFileAppender { Name: "LogFileAppender" } fileAppender) continue;
+                    fileAppender.File = path;
+                    fileAppender.ActivateOptions();
+                }
+
+                Log = LogManager.GetLogger("mRemoteNG", "Logger");
+            }
+            catch (Exception ex)
+            {
+                // Called from the options page too, where a path the user typed must not take the
+                // dialog down; any appender already working keeps writing.
+                EnsureLog().Error($"Could not set up logging to \"{path}\"; continuing without it.", ex);
+            }
         }
+
+        // Keeps Log non-null for callers that do not check it. The default repository has no file
+        // appender configured, so this logger discards what it is given.
+        private ILog EnsureLog() => Log ??= LogManager.GetLogger(typeof(Logger));
 
         private static string BuildLogFilePath()
         {
