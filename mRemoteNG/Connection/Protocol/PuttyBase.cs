@@ -591,9 +591,11 @@ namespace mRemoteNG.Connection.Protocol
 
                 // the command line is worth having in the log when a connection behaves
                 // differently than the same command run by hand; the password travels
-                // through a named pipe, so only its name appears here
+                // through a named pipe, so only its name appears here. StartInfo.FileName, not
+                // PuttyPath: a smart card connection switches to PuTTY CAC and leaves the
+                // configured path pointing at the bundled PuTTYNG.
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
-                    $"{PuttyPath} {PuttyProcess.StartInfo.Arguments}", true);
+                    $"{PuttyProcess.StartInfo.FileName} {PuttyProcess.StartInfo.Arguments}", true);
 
                 PuttyProcess.EnableRaisingEvents = true;
                 PuttyProcess.Exited += ProcessExited;
