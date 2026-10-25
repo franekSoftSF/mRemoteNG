@@ -162,10 +162,27 @@ namespace mRemoteNG.Config.Serializers.ConnectionSerializers.Xml
                             parentContainer.AddChild(connectionInfo);
                             break;
                         case TreeNodeType.Container:
-                            ContainerInfo containerInfo = new();
+                            ContainerInfo containerInfo;
 
                             if (_confVersion >= 0.9)
-                                containerInfo.CopyFrom(GetConnectionInfoFromXml(xmlNode));
+                            {
+                                // The serializer writes an Id for a container just as it
+                                // does for a connection, but CopyFrom cannot carry it
+                                // back: ConstantID has no setter. Taken from the element
+                                // instead, so a container keeps its identity across a
+                                // save and load; otherwise anything that finds a folder
+                                // by its id creates a second one on the next start.
+                                ConnectionInfo containerProperties = GetConnectionInfoFromXml(xmlNode);
+                                containerInfo = new ContainerInfo(containerProperties?.ConstantID ?? Guid.NewGuid().ToString());
+
+                                if (containerProperties != null)
+                                    containerInfo.CopyFrom(containerProperties);
+                            }
+                            else
+                            {
+                                containerInfo = new ContainerInfo();
+                            }
+
                             if (_confVersion >= 0.8)
                             {
                                 containerInfo.IsExpanded = xmlNode.GetAttributeAsBool("Expanded");

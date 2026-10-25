@@ -97,6 +97,7 @@ namespace mRemoteNG.Config.BlinkyAccess
 
             int removed = RemoveConnectionsNotReturned(existing, seen);
             RemoveEmptyFolders(branch);
+            RemoveStrandedBranches(root, branch);
             SortBranch(branch);
 
             return new BlinkyAccessSyncSummary(added, updated, removed);
@@ -259,6 +260,31 @@ namespace mRemoteNG.Config.BlinkyAccess
             {
                 if (!folder.HasChildren())
                     branch.RemoveChild(folder);
+            }
+        }
+
+        /// <summary>
+        /// Clears away copies of the branch left behind by versions that did not keep a
+        /// container's identifier across a save and a load: the branch was not
+        /// recognised on the next start and a second one was created beside it.
+        ///
+        /// Only a container that still looks exactly as this code left it is removed —
+        /// the managed name and the managed hint, directly below the root — and nothing
+        /// is lost by removing it, because everything it holds comes from the portal and
+        /// is in the branch that stays.
+        /// </summary>
+        private static void RemoveStrandedBranches(ContainerInfo root, ContainerInfo branch)
+        {
+            foreach (ContainerInfo candidate in root.Children.OfType<ContainerInfo>().ToArray())
+            {
+                if (ReferenceEquals(candidate, branch))
+                    continue;
+
+                if (string.Equals(candidate.Name, Language.BlinkyAccessRootName, StringComparison.Ordinal) &&
+                    string.Equals(candidate.Description, Language.BlinkyAccessBranchHint, StringComparison.Ordinal))
+                {
+                    root.RemoveChild(candidate);
+                }
             }
         }
 

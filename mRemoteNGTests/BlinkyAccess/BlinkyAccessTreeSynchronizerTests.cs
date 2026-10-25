@@ -3,6 +3,7 @@ using mRemoteNG.Config.BlinkyAccess;
 using mRemoteNG.Connection;
 using mRemoteNG.Connection.Protocol;
 using mRemoteNG.Container;
+using mRemoteNG.Resources.Language;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -266,6 +267,41 @@ namespace mRemoteNGTests.BlinkyAccess
                 Assert.That(lookalike.Name, Is.EqualTo("not the portal's"));
                 Assert.That(lookalike.Hostname, Is.EqualTo("lookalike.example.com"));
             });
+        }
+
+        [Test]
+        public void ACopyOfTheBranchLeftBehindByAnOlderVersionIsClearedAway()
+        {
+            // before container identifiers survived a save and load, the branch was not
+            // recognised on the next start and a second one appeared beside it
+            ContainerInfo stranded = new()
+            {
+                Name = Language.BlinkyAccessRootName,
+                Description = Language.BlinkyAccessBranchHint
+            };
+            stranded.AddChild(new ConnectionInfo(AppId) { Name = "szymon@app-01" });
+            _root.AddChild(stranded);
+
+            _synchronizer.Synchronize(_root, [AppConnection()]);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(_root.Children.OfType<ContainerInfo>().Count(c => c.Name == Language.BlinkyAccessRootName), Is.EqualTo(1),
+                    "the user must not be left looking at two Blinky Access folders");
+                Assert.That(_root.Children, Does.Not.Contain(stranded));
+                Assert.That(Find(AppId), Is.Not.Null, "the surviving branch is filled from the portal");
+            });
+        }
+
+        [Test]
+        public void AFolderOfTheUsersThatMerelyShadowsTheNameIsKept()
+        {
+            ContainerInfo lookalike = new() { Name = Language.BlinkyAccessRootName, Description = "my own folder" };
+            _root.AddChild(lookalike);
+
+            _synchronizer.Synchronize(_root, [AppConnection()]);
+
+            Assert.That(_root.Children, Does.Contain(lookalike));
         }
 
         [Test]
